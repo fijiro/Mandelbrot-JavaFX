@@ -1,7 +1,6 @@
 package iiro.toiv.mandelbrotjavafx.Graphics;
 
 
-import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.PositionController;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
