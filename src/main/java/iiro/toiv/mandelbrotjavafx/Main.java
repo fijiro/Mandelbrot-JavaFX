@@ -17,11 +17,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     //Calculate mandelbrot per pixel: escape time
     //Calculate pixel position
     //Create matrix that holds values for each pixel
@@ -76,5 +71,8 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Mandelbrot");
         primaryStage.show();
+    }
+    public static void main(String[] args) {
+        launch(args);
     }
 }

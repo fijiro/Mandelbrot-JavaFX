@@ -15,7 +15,7 @@ public class InputController {
         System.out.println("Recalculating!");
         Main.matrix.resize((int) Main.mCanvas.getWidth(), (int) Main.mCanvas.getHeight());
         Mandelbrot.calculatePixels(Main.matrix);
-        GraphicsController.drawPixels(Main.matrix);
+        Main.graphicsController.drawPixels(Main.matrix);
     }));
     public InputController(Canvas canvas) {
         /*
@@ -50,8 +50,8 @@ public class InputController {
             timeline.play();
         });
         Main.speedField.setOnAction(event -> {
-            GraphicsController.palettes.adjustSpeed(Double.parseDouble(Main.speedField.getText()));
-            GraphicsController.drawPixels(Main.matrix);
+            Main.graphicsController.palettes.adjustSpeed(Double.parseDouble(Main.speedField.getText()));
+            Main.graphicsController.drawPixels(Main.matrix);
         });
     }
 }
