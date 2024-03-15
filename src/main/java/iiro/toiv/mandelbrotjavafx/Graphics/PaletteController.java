@@ -28,7 +28,7 @@ public class PaletteController {
     }
 
     // Clears palette and generates new one
-    public void generatePalette(int z, PaletteType pType) {
+    public void generatePalette(PaletteType pType) {
         palette.clear();
         switch (pType) {
             case BlueToWhite:
