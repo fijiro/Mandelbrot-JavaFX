@@ -3,15 +3,13 @@ package iiro.toiv.mandelbrotjavafx.Graphics;
 
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
-import iiro.toiv.mandelbrotjavafx.Positions.PositionController;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
 public class GraphicsController {
-    private Color color = new Color(0, 0, 0, 1);
-    private GraphicsContext gc;
+    private Color color;
+    private final GraphicsContext gc;
     //static PixelWriter pixelWriter;
     public PaletteController palettes = new PaletteController();
 

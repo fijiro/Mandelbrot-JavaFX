@@ -1,6 +1,5 @@
 package iiro.toiv.mandelbrotjavafx.Input;
 
-import iiro.toiv.mandelbrotjavafx.Graphics.GraphicsController;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import javafx.animation.KeyFrame;
@@ -44,11 +43,11 @@ public class InputController {
             Mandelbrot.scaleController.zoomLevel(factor);
             timeline.play();
         });
-
         Main.iterationField.setOnAction(event -> {
             Mandelbrot.Z = Integer.parseInt(Main.iterationField.getText());
             timeline.play();
         });
+
         Main.speedField.setOnAction(event -> {
             Main.graphicsController.palettes.adjustSpeed(Double.parseDouble(Main.speedField.getText()));
             Main.graphicsController.drawPixels(Main.matrix);

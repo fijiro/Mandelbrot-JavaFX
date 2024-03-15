@@ -25,14 +25,14 @@ public class Main extends Application {
     public static final Canvas mCanvas = new Canvas(500, 500);
     StackPane centerPane = new StackPane(mCanvas);
     public static final Matrix matrix = new Matrix((int) mCanvas.getWidth(), (int) mCanvas.getHeight());
-    static public InputController inputController = new InputController(mCanvas);
+    //static public InputController inputController = new InputController(mCanvas);
     static public GraphicsController graphicsController = new GraphicsController(mCanvas);
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
     @Override
     public void start(Stage primaryStage) {
-        graphicsController.palettes.generatePalette(20, PaletteController.PaletteType.BlueToWhiteToYellow);
+        graphicsController.palettes.generatePalette(PaletteController.PaletteType.BlueToWhiteToYellow);
         Mandelbrot.calculatePixels(matrix);
         graphicsController.drawPixels(matrix);
         //iterationField.fireEvent();
