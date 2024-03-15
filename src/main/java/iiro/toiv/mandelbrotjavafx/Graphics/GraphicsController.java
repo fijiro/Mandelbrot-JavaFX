@@ -8,7 +8,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class GraphicsController {
-    private Color color;
     private final GraphicsContext gc;
     //static PixelWriter pixelWriter;
     public PaletteController palettes = new PaletteController();
@@ -17,11 +16,17 @@ public class GraphicsController {
         gc = canvas.getGraphicsContext2D();
     }
 
+    /**
+     * Draws and colors each pixel based on their mu (escape time) from palette.
+     *
+     * @param matrix matrix containing pixels.
+     */
     public void drawPixels(Matrix matrix) {
-        gc.clearRect(0,0,gc.getCanvas().getWidth(),gc.getCanvas().getHeight());
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        Color color;
         for (int i = 0; i < matrix.getWidth(); i++) {
             for (int j = 0; j < matrix.getHeight(); j++) {
-                if (matrix.get(i,j).n >= Mandelbrot.Z) color = new Color(0, 0, 0, 1);
+                if (matrix.get(i, j).n >= Mandelbrot.Z) color = new Color(0, 0, 0, 1);
                 else color = palettes.getPaletteColor(matrix.get(i, j).mu);
                 gc.setStroke(new Color(color.getRed(), color.getGreen(), color.getBlue(), 1));
                 gc.strokeRect(i, j, 1, 1);

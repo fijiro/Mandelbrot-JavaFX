@@ -2,7 +2,6 @@ package iiro.toiv.mandelbrotjavafx;
 
 import iiro.toiv.mandelbrotjavafx.Graphics.GraphicsController;
 import iiro.toiv.mandelbrotjavafx.Graphics.PaletteController;
-import iiro.toiv.mandelbrotjavafx.Input.InputController;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.application.Application;
@@ -17,13 +16,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    //Calculate mandelbrot per pixel: escape time
-    //Calculate pixel position
-    //Create matrix that holds values for each pixel
-    //mandelbrotCanvas holds the mandelbrot
+    //mCanvas holds the mandelbrot
     //mCanvas is from -2 to 2
     public static final Canvas mCanvas = new Canvas(500, 500);
     StackPane centerPane = new StackPane(mCanvas);
+    //Create matrix that holds values for each pixel
     public static final Matrix matrix = new Matrix((int) mCanvas.getWidth(), (int) mCanvas.getHeight());
     //static public InputController inputController = new InputController(mCanvas);
     static public GraphicsController graphicsController = new GraphicsController(mCanvas);
@@ -33,6 +30,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         graphicsController.palettes.generatePalette(PaletteController.PaletteType.BlueToWhiteToYellow);
+        //Calculate mandelbrot per pixel escape time
         Mandelbrot.calculatePixels(matrix);
         graphicsController.drawPixels(matrix);
         //iterationField.fireEvent();
