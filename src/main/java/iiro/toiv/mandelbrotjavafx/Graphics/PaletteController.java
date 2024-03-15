@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class PaletteController {
     public enum PaletteType {BlueToWhite, BlueToYellow, BlueToWhiteToYellow}
+
     private final ArrayList<Color> palette = new ArrayList<>();
     private double colorSpeed = 32;
 
@@ -13,17 +14,17 @@ public class PaletteController {
         // Calculate how far the color is in the loop, from 0 to 1
         double colorDistance = mu / colorSpeed - Math.floor(mu / colorSpeed);
         // Draw black when no escape
-        if (palette.isEmpty() || colorDistance == 1) return new Color(0, 0, 0, 0);
+        //if (palette.isEmpty() || colorDistance == 1) return new Color(0, 0, 0, 0);
 
         double distanceInPalette = (palette.size() - 1) * colorDistance;
-        Color _pColor1 = palette.get((int) Math.floor(distanceInPalette));
-        Color _pColor2 = palette.get((int) Math.ceil(distanceInPalette));
+        Color paletteColor1 = palette.get((int) Math.floor(distanceInPalette));
+        Color paletteColor2 = palette.get((int) Math.ceil(distanceInPalette));
         distanceInPalette -= Math.floor(distanceInPalette);
 
-        Color temp = new Color((_pColor2.getRed() - _pColor1.getRed()) * distanceInPalette + _pColor1.getRed(),
-                (_pColor2.getGreen() - _pColor1.getGreen()) * distanceInPalette + _pColor1.getGreen(),
-                (_pColor2.getBlue() - _pColor1.getBlue()) * distanceInPalette + _pColor1.getBlue(), 1);
-        return temp;
+        Color color = new Color((paletteColor2.getRed() - paletteColor1.getRed()) * distanceInPalette + paletteColor1.getRed(),
+                (paletteColor2.getGreen() - paletteColor1.getGreen()) * distanceInPalette + paletteColor1.getGreen(),
+                (paletteColor2.getBlue() - paletteColor1.getBlue()) * distanceInPalette + paletteColor1.getBlue(), 1);
+        return color;
     }
 
     // Clears palette and generates new one

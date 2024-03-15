@@ -4,7 +4,7 @@ import iiro.toiv.mandelbrotjavafx.Graphics.GraphicsController;
 import iiro.toiv.mandelbrotjavafx.Graphics.PaletteController;
 import iiro.toiv.mandelbrotjavafx.Input.InputController;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
-import iiro.toiv.mandelbrotjavafx.Positions.PositionController;
+import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -29,17 +29,18 @@ public class Main extends Application {
     //mCanvas is from -2 to 2
     public static final Canvas mCanvas = new Canvas(500, 500);
     StackPane centerPane = new StackPane(mCanvas);
-    public static final PositionController.Matrix matrix = new PositionController.Matrix((int) mCanvas.getWidth(), (int) mCanvas.getHeight());
-    private InputController inputController = new InputController(mCanvas);
-    private GraphicsController graphicsController = new GraphicsController(mCanvas);
+    public static final Matrix matrix = new Matrix((int) mCanvas.getWidth(), (int) mCanvas.getHeight());
+    static public InputController inputController = new InputController(mCanvas);
+    static public GraphicsController graphicsController = new GraphicsController(mCanvas);
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
     @Override
     public void start(Stage primaryStage) {
-        GraphicsController.palettes.generatePalette(20, PaletteController.PaletteType.BlueToWhiteToYellow);
+        graphicsController.palettes.generatePalette(20, PaletteController.PaletteType.BlueToWhiteToYellow);
         Mandelbrot.calculatePixels(matrix);
-        GraphicsController.drawPixels(matrix);
+        graphicsController.drawPixels(matrix);
+        //iterationField.fireEvent();
         //create coordinate panel with axises
         centerPane.setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
         centerPane.setLayoutX(0);
@@ -73,7 +74,7 @@ public class Main extends Application {
         StackPane root = new StackPane(uiPane);
         Scene scene = new Scene(root, 1200, 800);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Coordinate Grid");
+        primaryStage.setTitle("Mandelbrot");
         primaryStage.show();
     }
 }
