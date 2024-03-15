@@ -1,30 +1,32 @@
 package iiro.toiv.mandelbrotjavafx.Graphics;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class PaletteController {
+public class PaletteController implements Serializable {
     public enum PaletteType {BlueToWhite, BlueToYellow, BlueToWhiteToYellow}
-
-    private final ArrayList<Color> palette = new ArrayList<>();
+    private ArrayList<Color> palette = new ArrayList<>();
     private double colorSpeed = 32;
 
     public Color getPaletteColor(double mu) {
         // Calculate how far the color is in the loop, from 0 to 1
         double colorDistance = mu / colorSpeed - Math.floor(mu / colorSpeed);
-        // Draw black when no escape
-        //if (palette.isEmpty() || colorDistance == 1) return new Color(0, 0, 0, 0);
+        //default to black
+        if (palette.isEmpty() || colorDistance == 1) return new Color(0, 0, 0, 1);
 
         double distanceInPalette = (palette.size() - 1) * colorDistance;
         Color paletteColor1 = palette.get((int) Math.floor(distanceInPalette));
         Color paletteColor2 = palette.get((int) Math.ceil(distanceInPalette));
         distanceInPalette -= Math.floor(distanceInPalette);
 
-        Color color = new Color((paletteColor2.getRed() - paletteColor1.getRed()) * distanceInPalette + paletteColor1.getRed(),
+        return new Color((paletteColor2.getRed() - paletteColor1.getRed()) * distanceInPalette + paletteColor1.getRed(),
                 (paletteColor2.getGreen() - paletteColor1.getGreen()) * distanceInPalette + paletteColor1.getGreen(),
                 (paletteColor2.getBlue() - paletteColor1.getBlue()) * distanceInPalette + paletteColor1.getBlue(), 1);
-        return color;
     }
 
     // Clears palette and generates new one
@@ -56,7 +58,18 @@ public class PaletteController {
                 break;
         }
     }
+    public void setPalette(ArrayList<Color> palette) {
+        this.palette = palette;
+    }
+    public ObservableList<Color> getPalette() {
+        return FXCollections.observableList(palette);
+    }
 
+    public void addColor(Double r, Double g, Double b) {
+        palette.removeFirst();
+        palette.add(new Color(r,g,b,1));
+        palette.addFirst(new Color(r,g,b,1));
+    }
     public void adjustSpeed(double adjustment) {
         colorSpeed = Math.clamp(colorSpeed + adjustment, 1, colorSpeed + adjustment);
     }
