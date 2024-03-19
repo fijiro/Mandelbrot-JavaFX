@@ -8,19 +8,26 @@ import java.util.ArrayList;
 public class FileController {
     public static void savePalette(String path, ArrayList<Color> palette) {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(path))) {
-            objectOutputStream.writeObject(palette);
+            for (Color color : palette) {
+                objectOutputStream.writeDouble(color.getRed());
+                objectOutputStream.writeDouble(color.getGreen());
+                objectOutputStream.writeDouble(color.getBlue());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static ArrayList<Color> readPalette(String path) {
+        ArrayList<Color> readPalette = new ArrayList<>();
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path))) {
-            return (ArrayList<Color>) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+            while (objectInputStream.available() > 0) {
+                readPalette.add(new Color(objectInputStream.readDouble(), objectInputStream.readDouble(), objectInputStream.readDouble(), 1));
+            }
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        return readPalette;
     }
 
     public void savePosition(String path, double xMin, double yMin, double dist) {
