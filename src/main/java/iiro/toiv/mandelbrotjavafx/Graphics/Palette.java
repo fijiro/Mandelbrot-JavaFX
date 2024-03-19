@@ -1,13 +1,11 @@
 package iiro.toiv.mandelbrotjavafx.Graphics;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PaletteController implements Serializable {
+public class Palette implements Serializable {
     public enum PaletteType {BlueToWhite, BlueToYellow, BlueToWhiteToYellow}
 
     private transient ArrayList<Color> palette = new ArrayList<>();

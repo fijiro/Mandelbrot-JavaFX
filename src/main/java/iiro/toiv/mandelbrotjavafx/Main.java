@@ -1,8 +1,8 @@
 package iiro.toiv.mandelbrotjavafx;
 
 import iiro.toiv.mandelbrotjavafx.Files.FileController;
-import iiro.toiv.mandelbrotjavafx.Graphics.PaletteController;
-import iiro.toiv.mandelbrotjavafx.Input.InputController;
+import iiro.toiv.mandelbrotjavafx.Graphics.Palette;
+import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -32,8 +32,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        InputController input = new InputController(mCanvas);
-        input.graphics.palette.generatePalette(PaletteController.PaletteType.BlueToWhiteToYellow);
+        Input input = new Input(mCanvas);
+        input.graphics.palette.generatePalette(Palette.PaletteType.BlueToWhiteToYellow);
         //TODO: input.graphics.palette.setPalette(FileController.readPalette("palettes.dat"));
         input.recalculate();
         //Calculate mandelbrot per pixel escape time

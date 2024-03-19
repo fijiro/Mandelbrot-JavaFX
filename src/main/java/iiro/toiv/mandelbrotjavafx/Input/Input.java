@@ -1,26 +1,19 @@
 package iiro.toiv.mandelbrotjavafx.Input;
 
-import iiro.toiv.mandelbrotjavafx.Graphics.GraphicsController;
+import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.util.Duration;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
-public class InputController {
+public class Input {
     private double finalX = 0, finalY = 0;
     public static volatile boolean alreadyCalulating = false;
     private final Mandelbrot mandelbrot = new Mandelbrot();
     private final ExecutorService executor = new ForkJoinPool(1);
-    public GraphicsController graphics;
+    public Graphics graphics;
 
     public void recalculate() {
         System.out.println("Recalculating!");
@@ -36,19 +29,8 @@ public class InputController {
         //executor.submit(graphics);
     }
 
-    public InputController(Canvas canvas) {
-        graphics = new GraphicsController(canvas);
-        /*
-        canvas.setOnMousePressed(event -> {
-            initialX = event.getSceneX();
-            offsetX = event.getSceneX() - canvas.getLayoutX();
-            initialY = event.getSceneY();
-            offsetY = event.getSceneY() - canvas.getLayoutY();
-        });
-        canvas.setOnMouseDragged(event -> {
-            canvas.setLayoutX(event.getSceneX() - offsetX);
-            canvas.setLayoutY(event.getSceneY() - offsetY);
-        });*/
+    public Input(Canvas canvas) {
+        graphics = new Graphics(canvas);
         canvas.setOnMouseReleased(event -> {
             if (!alreadyCalulating) {
                 finalX = event.getX();
@@ -57,14 +39,16 @@ public class InputController {
                 System.out.println(finalX + " " + finalY);
                 mandelbrot.scaleController.centerTo(finalX, finalY);
                 //start timeline to calculate pixels
+                recalculate();
             }
-            recalculate();
         });
         canvas.setOnScroll(event -> {
-            // factor = -1.5 - 1.5
-            double factor = event.getDeltaY() / 80 * 3;
-            mandelbrot.scaleController.zoomLevel(factor);
-            recalculate();
+            if (!alreadyCalulating) {
+                // factor = -1.5 - 1.5
+                double factor = event.getDeltaY() / 80 * 3;
+                mandelbrot.scaleController.zoomLevel(factor);
+                recalculate();
+            }
         });
         Main.iterationField.setOnAction(event -> {
             Mandelbrot.Z = Integer.parseInt(Main.iterationField.getText());
@@ -72,7 +56,6 @@ public class InputController {
         });
         Main.speedField.setOnAction(event -> {
             double speed = Double.parseDouble(Main.speedField.getText());
-
             graphics.palette.adjustSpeed(speed);
             graphics.drawPixels(Main.matrix);
         });

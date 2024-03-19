@@ -1,22 +1,18 @@
 package iiro.toiv.mandelbrotjavafx.Graphics;
 
 
-import iiro.toiv.mandelbrotjavafx.Input.InputController;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
-public class GraphicsController implements Runnable {
+public class Graphics implements Runnable {
     private final PixelWriter pixelWriter;
-    public PaletteController palette = new PaletteController();
+    public Palette palette = new Palette();
 
-    public GraphicsController(Canvas canvas) {
+    public Graphics(Canvas canvas) {
         pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
     }
 

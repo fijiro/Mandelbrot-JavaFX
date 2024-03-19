@@ -1,8 +1,7 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
-import iiro.toiv.mandelbrotjavafx.Input.InputController;
+import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Main;
-import javafx.scene.canvas.Canvas;
 
 public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
@@ -11,7 +10,7 @@ public class Mandelbrot implements Runnable {
 
     public synchronized void calculatePixels(Matrix matrix) {
         double m;
-        InputController.alreadyCalulating = true;
+        Input.alreadyCalulating = true;
         for (int i = 0; i < matrix.getWidth(); i++) {
             if (Thread.currentThread().isInterrupted()) return;
             for (int j = 0; j < matrix.getHeight(); j++) {
@@ -36,7 +35,7 @@ public class Mandelbrot implements Runnable {
                 else matrix.get(i, j).mu = Math.clamp(matrix.get(i, j).n - val, 0.0f, matrix.get(i, j).n);
             }
         }
-        InputController.alreadyCalulating = false;
+        Input.alreadyCalulating = false;
     }
 
     private void repeatMandelbrot(Point p) {
