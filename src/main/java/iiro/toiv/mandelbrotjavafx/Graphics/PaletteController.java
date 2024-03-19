@@ -71,6 +71,7 @@ public class PaletteController implements Serializable {
         palette.addFirst(new Color(r,g,b,1));
     }
     public void adjustSpeed(double adjustment) {
-        colorSpeed = Math.clamp(colorSpeed + adjustment, 1, colorSpeed + adjustment);
+        colorSpeed += adjustment;
+        colorSpeed = Math.max(colorSpeed,0);
     }
 }
