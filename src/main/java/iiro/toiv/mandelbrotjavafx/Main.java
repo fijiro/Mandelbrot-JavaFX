@@ -5,15 +5,17 @@ import iiro.toiv.mandelbrotjavafx.Graphics.PaletteController;
 import iiro.toiv.mandelbrotjavafx.Input.InputController;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -33,9 +35,10 @@ public class Main extends Application {
         InputController input = new InputController(mCanvas);
         input.graphics.palette.generatePalette(PaletteController.PaletteType.BlueToWhiteToYellow);
         //TODO: input.graphics.palette.setPalette(FileController.readPalette("palettes.dat"));
+        input.recalculate();
         //Calculate mandelbrot per pixel escape time
-        input.timeline.play();
-        input.graphics.timeline.play();
+        //input.timeline.play();
+        //input.graphics.timeline.play();
         //iterationField.fireEvent();
         //create coordinate panel with axises
         centerPane.setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
@@ -52,15 +55,34 @@ public class Main extends Application {
         TextField blueField = new TextField("1");
         blueField.setMaxWidth(50);
         Button addColorButton = new Button("ADD");
-        addColorButton.setMinSize(50, 20);
+        //addColorButton.setMinSize(50, 20);
+        Button readPaletteButton = new Button("READ");
+        Button savePaletteButton = new Button("SAVE");
+
+        ListView<Color> paletteColors = new ListView<>();
+        paletteColors.setItems(FXCollections.observableList(input.graphics.palette.getPalette()));
+        paletteColors.setCellFactory(param -> new paletteCellFactory());
+
         GridPane colorPicker = new GridPane();
         colorPicker.setPadding(new Insets(10));
-        colorPicker.addRow(0, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField);
-        colorPicker.addRow(1, addColorButton);
-        addColorButton.setOnAction(event -> input.addColorAction(Double.parseDouble(redField.getText()), Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText())));
+        colorPicker.add(new Text("Use values 0 - 1."), 0, 0, 3, 1);
+        colorPicker.addRow(1, new HBox(5, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField));
+        colorPicker.addRow(2, new HBox(5, addColorButton, readPaletteButton, savePaletteButton));
+        colorPicker.setGridLinesVisible(true);
+        addColorButton.setOnAction(event -> {
+            input.graphics.palette.addColor(Double.parseDouble(redField.getText()),
+                    Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText()));
+            input.graphics.drawPixels(Main.matrix);
+            paletteColors.setItems(FXCollections.observableList(input.graphics.palette.getPalette()));
+        });
+        readPaletteButton.setOnAction(event -> {
+            input.graphics.palette.setPalette(FileController.readPalette("palettes.dat"));
+            input.graphics.drawPixels(matrix);
+        });
+        savePaletteButton.setOnAction(event -> FileController.savePalette("palettes.dat", input.graphics.palette.getPalette()));
+
+
         rightPane.setCenter(colorPicker);
-        ListView<Color> paletteColors = new ListView<>();
-        paletteColors.setItems(input.graphics.palette.getPalette());
         rightPane.setBottom(paletteColors);
 
         //left pane
@@ -82,5 +104,20 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static class paletteCellFactory extends ListCell<Color> {
+        @Override
+        protected void updateItem(Color item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null && !empty) {
+                Rectangle rect = new Rectangle(100, 10);
+                rect.setFill(item);
+                setGraphic(rect);
+            }
+            else {
+                setText("NULL");
+            }
+        }
     }
 }

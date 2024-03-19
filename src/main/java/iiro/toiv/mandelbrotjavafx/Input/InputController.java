@@ -3,6 +3,7 @@ package iiro.toiv.mandelbrotjavafx.Input;
 import iiro.toiv.mandelbrotjavafx.Graphics.GraphicsController;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -16,18 +17,24 @@ import java.util.concurrent.ForkJoinPool;
 
 public class InputController {
     private double finalX = 0, finalY = 0;
-    public static boolean alreadyCalulating = false;
+    public static volatile boolean alreadyCalulating = false;
     private final Mandelbrot mandelbrot = new Mandelbrot();
     private final ExecutorService executor = new ForkJoinPool(1);
     public GraphicsController graphics;
-    public Timeline timeline = new Timeline(new KeyFrame(new Duration(100), event -> {
+
+    public void recalculate() {
         System.out.println("Recalculating!");
         Main.matrix.resize((int) Main.mCanvas.getWidth(), (int) Main.mCanvas.getHeight());
-        mandelbrot.run();
-        graphics.run();
+        mandelbrot.calculatePixels(Main.matrix);
+        graphics.drawPixels(Main.matrix);
+        /*mandelbrot.run();
+        while (alreadyCalulating) {
+            Thread.onSpinWait();
+        }
+        graphics.run();*/
         //executor.submit(mandelbrot);
         //executor.submit(graphics);
-    }));
+    }
 
     public InputController(Canvas canvas) {
         graphics = new GraphicsController(canvas);
@@ -50,19 +57,18 @@ public class InputController {
                 System.out.println(finalX + " " + finalY);
                 mandelbrot.scaleController.centerTo(finalX, finalY);
                 //start timeline to calculate pixels
-                timeline.play();
             }
-
+            recalculate();
         });
         canvas.setOnScroll(event -> {
             // factor = -1.5 - 1.5
             double factor = event.getDeltaY() / 80 * 3;
             mandelbrot.scaleController.zoomLevel(factor);
-            timeline.play();
+            recalculate();
         });
         Main.iterationField.setOnAction(event -> {
             Mandelbrot.Z = Integer.parseInt(Main.iterationField.getText());
-            timeline.play();
+            recalculate();
         });
         Main.speedField.setOnAction(event -> {
             double speed = Double.parseDouble(Main.speedField.getText());
@@ -71,8 +77,8 @@ public class InputController {
             graphics.drawPixels(Main.matrix);
         });
     }
-
+/*
     public void addColorAction(double r, double g, double b) {
-        graphics.palette.addColor(r, g, b);
-    }
+
+    }*/
 }

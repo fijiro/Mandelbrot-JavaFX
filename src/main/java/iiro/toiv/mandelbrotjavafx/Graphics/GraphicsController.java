@@ -15,9 +15,6 @@ import javafx.util.Duration;
 public class GraphicsController implements Runnable {
     private final PixelWriter pixelWriter;
     public PaletteController palette = new PaletteController();
-    public Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
-        ;
-    }));
 
     public GraphicsController(Canvas canvas) {
         pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
@@ -37,7 +34,6 @@ public class GraphicsController implements Runnable {
                 pixelWriter.setColor(i, j, color);
             }
         }
-        InputController.alreadyCalulating = false;
     }
 
     @Override

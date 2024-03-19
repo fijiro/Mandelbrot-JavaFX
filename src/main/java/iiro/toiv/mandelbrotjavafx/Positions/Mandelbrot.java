@@ -36,6 +36,7 @@ public class Mandelbrot implements Runnable {
                 else matrix.get(i, j).mu = Math.clamp(matrix.get(i, j).n - val, 0.0f, matrix.get(i, j).n);
             }
         }
+        InputController.alreadyCalulating = false;
     }
 
     private void repeatMandelbrot(Point p) {
