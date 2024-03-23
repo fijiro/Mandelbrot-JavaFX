@@ -6,30 +6,32 @@ public class Scale {
 
     private double xMin = -2;
     private double yMin = -1.5;
-    private double dist = 3;
+    private double distance = 3;
 
     /**
      * Increases the overall scale of the set
-     * @param zoomAmount either -1.5 or 1.5
+     *
+     * @param zoomIn positive when zooming in, negative when zooming out.
      */
-    public void zoomLevel(double zoomAmount) {
+    public void zoomLevel(boolean zoomIn) {
         // Zoom in
         double dist2;
-        if (zoomAmount >= 0) {dist2 = dist / zoomAmount;}
+        if (zoomIn) {dist2 = distance / 1.5;}
         // Zoom out
-        else {dist2 = dist * -zoomAmount;}
+        else {dist2 = distance * 1.5;}
         // Save zoom
-        xMin += (dist - dist2) / 2;
-        yMin += (dist - dist2) / 2;
-        dist = dist2;
+        xMin += (distance - dist2) / 2;
+        yMin += (distance - dist2) / 2;
+        distance = dist2;
     }
+
     /**
      * @param x horizontal distance from canvas center
      * @param y vertical distance from canvas center
      */
     public void centerTo(double x, double y) {
-        xMin += x / Main.mCanvas.getWidth() * dist - dist / 2;
-        yMin += y / Main.mCanvas.getHeight() * dist - dist / 2;
+        xMin += x / Main.mImage.getWidth() * distance - distance / 2;
+        yMin += y / Main.mImage.getHeight() * distance - distance / 2;
     }
 
     public double getxMin() {
@@ -40,7 +42,7 @@ public class Scale {
         return yMin;
     }
 
-    public double getDist() {
-        return dist;
+    public double getDistance() {
+        return distance;
     }
 }
