@@ -5,7 +5,6 @@ import iiro.toiv.mandelbrotjavafx.Graphics.Palette;
 import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -31,7 +30,7 @@ public class Main extends Application {
     public final ImageView mImageView = new ImageView(mImage);
     private Timeline drawLoop;
     //Create matrix that holds values for each pixel
-    public final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
+    public static final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
@@ -42,9 +41,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Input input = new Input(mImageView);
-        drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> {
-            input.graphics.drawPixels(matrix);
-        }));
+        drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> input.graphics.drawPixels(matrix)));
         Palette palette = input.graphics.palette;
         palette.generatePalette(Palette.PaletteType.BlueToWhiteToYellow);
         input.recalculate();
