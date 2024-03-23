@@ -3,23 +3,28 @@ package iiro.toiv.mandelbrotjavafx.Input;
 import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
 public class Input {
     private double finalX = 0, finalY = 0;
-    public static volatile boolean alreadyCalulating = false;
+    public static boolean alreadyCalulating = false;
     private final Mandelbrot mandelbrot = new Mandelbrot();
     private final ExecutorService executor = new ForkJoinPool(1);
-    public Graphics graphics;
+    public static Graphics graphics;
 
     public void recalculate() {
+        alreadyCalulating = true;
         System.out.println("Recalculating!");
-        Main.matrix.resize((int) Main.mCanvas.getWidth(), (int) Main.mCanvas.getHeight());
-        mandelbrot.calculatePixels(Main.matrix);
-        graphics.drawPixels(Main.matrix);
+        Main.matrix.resize((int) Main.mImage.getWidth(), (int) Main.mImage.getHeight());
+
+        executor.execute(mandelbrot);
+        //mandelbrot.calculatePixels(Main.matrix);
+        //graphics.drawPixels(Main.matrix);
+        alreadyCalulating = false;
         /*mandelbrot.run();
         while (alreadyCalulating) {
             Thread.onSpinWait();
@@ -29,8 +34,8 @@ public class Input {
         //executor.submit(graphics);
     }
 
-    public Input(Canvas canvas) {
-        graphics = new Graphics(canvas);
+    public Input(ImageView canvas) {
+        graphics = new Graphics((WritableImage) canvas.getImage());
         canvas.setOnMouseReleased(event -> {
             if (!alreadyCalulating) {
                 finalX = event.getX();
@@ -44,9 +49,9 @@ public class Input {
         });
         canvas.setOnScroll(event -> {
             if (!alreadyCalulating) {
-                // factor = -1.5 - 1.5
-                double factor = event.getDeltaY() / 80 * 3;
-                mandelbrot.scaleController.zoomLevel(factor);
+                //zooms in if scrolled up
+                System.out.println(event.getDeltaY());
+                mandelbrot.scaleController.zoomLevel(event.getDeltaY() > 0);
                 recalculate();
             }
         });

@@ -4,38 +4,51 @@ import iiro.toiv.mandelbrotjavafx.Files.FileController;
 import iiro.toiv.mandelbrotjavafx.Graphics.Palette;
 import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
+import java.security.Key;
 
 
 public class Main extends Application {
     //mCanvas holds the mandelbrot
     //mCanvas is from -2 to 2
-    public static final Canvas mCanvas = new Canvas(600, 600);
-    StackPane centerPane = new StackPane(mCanvas);
+    //public static final Canvas mCanvas = new Canvas(600, 600);
+    public static final WritableImage mImage = new WritableImage(600, 600);
+    public static final ImageView mImageView = new ImageView(mImage);
+    public Timeline drawLoop = new Timeline(144, new KeyFrame(Duration.millis(100), event -> {
+        Input.graphics.drawPixels(matrix);
+    }));
+    StackPane centerPane = new StackPane(mImageView);
     //Create matrix that holds values for each pixel
-    public static final Matrix matrix = new Matrix((int) mCanvas.getWidth(), (int) mCanvas.getHeight());
+    public static final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
     @Override
     public void start(Stage primaryStage) {
-        Input input = new Input(mCanvas);
+        Input input = new Input(mImageView);
         input.graphics.palette.generatePalette(Palette.PaletteType.BlueToWhiteToYellow);
-        //TODO: input.graphics.palette.setPalette(FileController.readPalette("palettes.dat"));
         input.recalculate();
+        drawLoop.setCycleCount(Timeline.INDEFINITE);
+        drawLoop.play();
         //Calculate mandelbrot per pixel escape time
         //input.timeline.play();
         //input.graphics.timeline.play();
@@ -69,21 +82,25 @@ public class Main extends Application {
         colorPicker.addRow(1, new HBox(5, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField));
         colorPicker.addRow(2, new HBox(5, addColorButton, readPaletteButton, savePaletteButton));
         colorPicker.setGridLinesVisible(true);
+
         addColorButton.setOnAction(event -> {
-            input.graphics.palette.addColor(Double.parseDouble(redField.getText()),
-                    Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText()));
-            input.graphics.drawPixels(Main.matrix);
+            input.graphics.palette.addColor(Double.parseDouble(redField.getText()), Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText()));
             paletteColors.setItems(FXCollections.observableList(input.graphics.palette.getPalette()));
+            input.graphics.drawPixels(Main.matrix);
         });
         readPaletteButton.setOnAction(event -> {
             input.graphics.palette.setPalette(FileController.readPalette("palettes.dat"));
+            paletteColors.setItems(FXCollections.observableList(input.graphics.palette.getPalette()));
             input.graphics.drawPixels(matrix);
         });
-        savePaletteButton.setOnAction(event -> FileController.savePalette("palettes.dat", input.graphics.palette.getPalette()));
+        savePaletteButton.setOnAction(event -> {
+            FileController.savePalette("palettes.dat", input.graphics.palette.getPalette());
+            paletteColors.setItems(FXCollections.observableList(input.graphics.palette.getPalette()));
+        });
 
 
         rightPane.setCenter(colorPicker);
-        rightPane.setBottom(paletteColors);
+        rightPane.setBottom(new BorderPane(paletteColors, null, null, new HBox(), null));
 
         //left pane
         BorderPane leftPane = new BorderPane();
@@ -116,7 +133,7 @@ public class Main extends Application {
                 setGraphic(rect);
             }
             else {
-                setText("NULL");
+                setGraphic(null);
             }
         }
     }
