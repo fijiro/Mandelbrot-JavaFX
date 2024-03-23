@@ -27,15 +27,15 @@ import javafx.util.Duration;
 public class Main extends Application {
     //mImage holds the mandelbrot
     //mImage is from -2 to 2
-    private static final WritableImage mImage = new WritableImage(600, 600);
+    private final WritableImage mImage = new WritableImage(600, 600);
     public final ImageView mImageView = new ImageView(mImage);
     private Timeline drawLoop;
     //Create matrix that holds values for each pixel
-    public static final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
+    public final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
-    public static WritableImage getmImage() {
+    public WritableImage getmImage() {
         return mImage;
     }
 

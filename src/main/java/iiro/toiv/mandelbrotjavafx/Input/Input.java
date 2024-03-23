@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 public class Input {
     private double finalX = 0, finalY = 0;
     private final Mandelbrot mandelbrot;
+    private final WritableImage image;
     private final ExecutorService executor = new ForkJoinPool(1);
 
     //TODO: Miksi <?>
@@ -21,9 +22,9 @@ public class Input {
 
     public void recalculate() {
         System.out.println("Recalculating!");
-        Main.matrix.resize((int) Main.getmImage().getWidth(), (int) Main.getmImage().getHeight());
+        Main.matrix.resize((int) image.getWidth(), (int) image.getHeight());
         //if (!executor.isShutdown()) {
-            //future.cancel(true);
+        //future.cancel(true);
         //}
         executor.submit(mandelbrot);
         //mandelbrot.calculatePixels(Main.matrix);
@@ -35,8 +36,9 @@ public class Input {
     }
 
     public Input(ImageView imageView) {
-        mandelbrot = new Mandelbrot(imageView.getImage());
-        graphics = new Graphics((WritableImage) imageView.getImage());
+        image = (WritableImage) imageView.getImage();
+        mandelbrot = new Mandelbrot(image);
+        graphics = new Graphics(image);
 
         imageView.setOnMouseReleased(event -> {
             finalX = event.getX();
