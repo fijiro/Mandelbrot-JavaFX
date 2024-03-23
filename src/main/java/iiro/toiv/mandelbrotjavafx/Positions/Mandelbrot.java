@@ -1,14 +1,14 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
-
-import iiro.toiv.mandelbrotjavafx.Main;
 import javafx.scene.image.Image;
 
 public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
     public static int Z = 100;
+    private final Matrix matrix;
     public Scale scaleController;
 
-    public Mandelbrot(Image image) {
+    public Mandelbrot(Image image, Matrix matrix) {
+        this.matrix = matrix;
         scaleController = new Scale(image);
     }
 
@@ -47,6 +47,6 @@ public class Mandelbrot implements Runnable {
 
     @Override
     public void run() {
-        calculatePixels(Main.matrix);
+        calculatePixels(matrix);
     }
 }

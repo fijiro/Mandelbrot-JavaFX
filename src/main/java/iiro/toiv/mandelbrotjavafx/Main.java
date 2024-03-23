@@ -26,23 +26,20 @@ import javafx.util.Duration;
 public class Main extends Application {
     //mImage holds the mandelbrot
     //mImage is from -2 to 2
+    //TODO: error handling for Number.parseNumber()
+    public final Matrix matrix = new Matrix(600, 600);
     private final WritableImage mImage = new WritableImage(600, 600);
     public final ImageView mImageView = new ImageView(mImage);
-    private Timeline drawLoop;
     //Create matrix that holds values for each pixel
-    public static final Matrix matrix = new Matrix((int) mImage.getWidth(), (int) mImage.getHeight());
     public static TextField iterationField = new TextField("100");
     public static TextField speedField = new TextField("1");
 
-    public WritableImage getmImage() {
-        return mImage;
-    }
-
     @Override
     public void start(Stage primaryStage) {
-        Input input = new Input(mImageView);
-        drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> input.graphics.drawPixels(matrix)));
+        Input input = new Input(mImageView, matrix);
         Palette palette = input.graphics.palette;
+
+        Timeline drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> input.graphics.drawPixels(matrix)));
         palette.generatePalette(Palette.PaletteType.BlueToWhiteToYellow);
         input.recalculate();
         drawLoop.setCycleCount(Timeline.INDEFINITE);
@@ -90,9 +87,13 @@ public class Main extends Application {
         });
 
         removeColorButton.setOnAction(event -> {
-            System.out.println(paletteColors.getEditingIndex());
-            palette.removeColor(paletteColors.getEditingIndex());
-            paletteColors.setItems(FXCollections.observableList(palette.getPalette()));
+            if (!palette.getPalette().isEmpty()) {
+                System.out.println(paletteColors.getSelectionModel().getSelectedIndex());
+                int index = paletteColors.getSelectionModel().getSelectedIndex();
+                index = index < 0 ? palette.getPalette().size() - 1 : index;
+                palette.removeColor(index);
+                paletteColors.setItems(FXCollections.observableList(palette.getPalette()));
+            }
         });
         readPaletteButton.setOnAction(event -> {
             palette.setPalette(FileController.readPalette("palettes.dat"));

@@ -3,49 +3,48 @@ package iiro.toiv.mandelbrotjavafx.Input;
 import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
 import iiro.toiv.mandelbrotjavafx.Main;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
+import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 
 public class Input {
-    private double finalX = 0, finalY = 0;
     private final Mandelbrot mandelbrot;
+    public Graphics graphics;
+    private final Matrix matrix;
     private final WritableImage image;
     private final ExecutorService executor = new ForkJoinPool(1);
 
     //TODO: Miksi <?>
-    private Future<?> future;
-    public Graphics graphics;
+    //private Future<?> future;
 
     public void recalculate() {
         System.out.println("Recalculating!");
-        Main.matrix.resize((int) image.getWidth(), (int) image.getHeight());
+        matrix.resize((int) image.getWidth(), (int) image.getHeight());
         //if (!executor.isShutdown()) {
-        //future.cancel(true);
+        //future.cancel(true); tarpeeton
         //}
         executor.submit(mandelbrot);
-        //mandelbrot.calculatePixels(Main.matrix);
-        //graphics.drawPixels(Main.matrix);
-        /*mandelbrot.run();
-        graphics.run();*/
-        //executor.submit(mandelbrot);
-        //executor.submit(graphics);
+        /*mandelbrot.calculatePixels(Main.matrix);
+        graphics.drawPixels(Main.matrix);
+        mandelbrot.run();
+        graphics.run();
+        executor.submit(mandelbrot);
+        executor.submit(graphics);*/
     }
 
-    public Input(ImageView imageView) {
+    public Input(ImageView imageView, Matrix matrix) {
+        this.matrix = matrix;
         image = (WritableImage) imageView.getImage();
-        mandelbrot = new Mandelbrot(image);
+        mandelbrot = new Mandelbrot(image, matrix);
         graphics = new Graphics(image);
 
         imageView.setOnMouseReleased(event -> {
-            finalX = event.getX();
-            finalY = event.getY();
-            System.out.println(finalX + " " + finalY);
+            System.out.println(event.getX() + " " + event.getY());
             //from 0 - imageView.getWidth().
-            mandelbrot.scaleController.centerTo(finalX, finalY);
+            mandelbrot.scaleController.centerTo(event.getX(), event.getY());
             //start timeline to calculate pixels
             recalculate();
 
@@ -64,7 +63,7 @@ public class Input {
         Main.speedField.setOnAction(event -> {
             double speed = Double.parseDouble(Main.speedField.getText());
             graphics.palette.adjustSpeed(speed);
-            graphics.drawPixels(Main.matrix);
+            graphics.drawPixels(matrix);
         });
     }
 /*
