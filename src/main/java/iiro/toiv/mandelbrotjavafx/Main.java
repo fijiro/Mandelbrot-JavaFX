@@ -33,7 +33,7 @@ public class Main extends Application {
     //public static final Canvas mCanvas = new Canvas(600, 600);
     public static final WritableImage mImage = new WritableImage(600, 600);
     public static final ImageView mImageView = new ImageView(mImage);
-    public Timeline drawLoop = new Timeline(144, new KeyFrame(Duration.millis(100), event -> {
+    public Timeline drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> {
         Input.graphics.drawPixels(matrix);
     }));
     StackPane centerPane = new StackPane(mImageView);

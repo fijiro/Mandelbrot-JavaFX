@@ -34,6 +34,7 @@ public class Graphics implements Runnable {
                 if (matrix.get(i, j).n >= Mandelbrot.Z) color = new Color(0, 0, 0, 1);
                 else color = palette.getPaletteColor(matrix.get(i, j).mu);
                 //pixelWriter.setColor(i, j, color);
+                imageWriter.setColor(i, j, color);
             }
         }
     }

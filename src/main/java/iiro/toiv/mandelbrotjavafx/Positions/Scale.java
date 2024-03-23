@@ -25,6 +25,13 @@ public class Scale {
         distance = dist2;
     }
 
+    public void assignCoordinates(Point point, int xPosition, int yPosition) {
+        point.x0 = getxMin() + (getDistance() / Main.mImage.getWidth() * xPosition);
+        point.y0 = getxMin() + (getDistance() / Main.mImage.getWidth() * yPosition);
+        point.x = point.x0;
+        point.y = point.y0;
+    }
+
     /**
      * @param x horizontal distance from canvas center
      * @param y vertical distance from canvas center

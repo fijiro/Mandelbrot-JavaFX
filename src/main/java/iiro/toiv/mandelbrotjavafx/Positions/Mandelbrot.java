@@ -1,8 +1,6 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
-import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Main;
-import javafx.application.Platform;
 
 public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
@@ -12,18 +10,14 @@ public class Mandelbrot implements Runnable {
     public void calculatePixels(Matrix matrix) {
         double m;
         for (int i = 0; i < matrix.getWidth(); i++) {
-            //if (Thread.currentThread().isInterrupted()) return;
+            if (Thread.currentThread().isInterrupted()) return;
             for (int j = 0; j < matrix.getHeight(); j++) {
-                //if (!isPixelOnScreen(Main.mCanvas, i, j)) continue;
-                //scaleController.assignCoords(matrix.get(i, j).x0, matrix.get(i, j).y0, i, j);
-                matrix.get(i, j).x0 = scaleController.getxMin() + (scaleController.getDistance() / Main.mImage.getWidth() * i);
-                matrix.get(i, j).y0 = scaleController.getyMin() + (scaleController.getDistance() / Main.mImage.getHeight() * j);
-                matrix.get(i, j).x = matrix.get(i, j).x0;
-                matrix.get(i, j).y = matrix.get(i, j).y0;
+                scaleController.assignCoordinates(matrix.get(i, j), i, j);
                 matrix.get(i, j).n = 0;
                 while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
                     repeatMandelbrot(matrix.get(i, j));
                 }
+                
                 // Twice more for smooth coloring
                 repeatMandelbrot(matrix.get(i, j));
                 repeatMandelbrot(matrix.get(i, j));
@@ -33,7 +27,7 @@ public class Mandelbrot implements Runnable {
                 double val = Math.log(Math.log(m)) / Math.log(2.0f);
                 if (Double.isNaN(val)) matrix.get(i, j).mu = matrix.get(i, j).n;
                 else matrix.get(i, j).mu = Math.clamp(matrix.get(i, j).n - val, 0.0f, matrix.get(i, j).n);
-                Input.graphics.drawPixel(matrix.get(i, j), i, j);
+                //Input.graphics.drawPixel(matrix.get(i, j), i, j);
             }
         }
     }
@@ -46,16 +40,6 @@ public class Mandelbrot implements Runnable {
         p.n++;
     }
 
-    /*
-    public boolean isPixelOnScreen(Canvas canvas, double x, double y) {
-        double canvasX = canvas.getBoundsInLocal().getMinX();
-        double canvasY = canvas.getBoundsInLocal().getMinY();
-        double canvasWidth = canvas.getWidth();
-        double canvasHeight = canvas.getHeight();
-
-        return x >= canvasX && x < canvasX + canvasWidth && y >= canvasY && y < canvasY + canvasHeight;
-    }
-    */
     @Override
     public void run() {
         calculatePixels(Main.matrix);

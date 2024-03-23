@@ -34,8 +34,11 @@ public class Matrix implements Serializable{
         matrixData.clear();
         matrixRows = h;
         matrixColumns = w;
+
         //Makes creating pixels faster because arraylist's size doesn't need to be gradually increased.
         matrixData.ensureCapacity(w * h);
+
+        //Fill with empty Points
         for (int i = 0; i < w * h; i++) {
             matrixData.add(new Point());
         }
