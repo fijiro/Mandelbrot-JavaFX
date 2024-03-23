@@ -11,8 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
 public class Input {
-    private final Mandelbrot mandelbrot;
-    public Graphics graphics;
+    public final Mandelbrot mandelbrot;
+    public final Graphics graphics;
     private final Matrix matrix;
     private final WritableImage image;
     private final ExecutorService executor = new ForkJoinPool(1);
@@ -66,8 +66,4 @@ public class Input {
             graphics.drawPixels(matrix);
         });
     }
-/*
-    public void addColorAction(double r, double g, double b) {
-
-    }*/
 }

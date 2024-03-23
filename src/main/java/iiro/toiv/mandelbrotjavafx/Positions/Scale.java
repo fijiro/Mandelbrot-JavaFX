@@ -56,4 +56,16 @@ public class Scale {
     public double getDiameter() {
         return diameter;
     }
+
+    public void setxMin(double xMin) {
+        this.xMin = xMin;
+    }
+
+    public void setyMin(double yMin) {
+        this.yMin = yMin;
+    }
+
+    public void setDiameter(double diameter) {
+        this.diameter = diameter;
+    }
 }

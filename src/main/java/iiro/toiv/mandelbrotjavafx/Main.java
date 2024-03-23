@@ -4,11 +4,13 @@ import iiro.toiv.mandelbrotjavafx.Files.FileController;
 import iiro.toiv.mandelbrotjavafx.Graphics.Palette;
 import iiro.toiv.mandelbrotjavafx.Input.Input;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
+import iiro.toiv.mandelbrotjavafx.Positions.Scale;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
@@ -37,8 +39,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Input input = new Input(mImageView, matrix);
+        Scale scale = input.mandelbrot.scaleController;
         Palette palette = input.graphics.palette;
-
+        FileController files = new FileController();
         Timeline drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> input.graphics.drawPixels(matrix)));
         palette.generatePalette(Palette.PaletteType.BlueToWhiteToYellow);
         input.recalculate();
@@ -66,7 +69,6 @@ public class Main extends Application {
         blueField.setMaxWidth(50);
         Button addColorButton = new Button(" + ");
         Button removeColorButton = new Button(" - ");
-        //addColorButton.setMinSize(50, 20);
         Button readPaletteButton = new Button("READ");
         Button savePaletteButton = new Button("SAVE");
 
@@ -75,6 +77,7 @@ public class Main extends Application {
         paletteColors.setCellFactory(param -> new paletteCellFactory());
 
         GridPane colorPicker = new GridPane();
+        colorPicker.setAlignment(Pos.BOTTOM_CENTER);
         colorPicker.setPadding(new Insets(10));
         colorPicker.add(new Text("Use values 0 - 1."), 0, 0, 3, 1);
         colorPicker.addRow(1, new HBox(5, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField));
@@ -96,11 +99,11 @@ public class Main extends Application {
             }
         });
         readPaletteButton.setOnAction(event -> {
-            palette.setPalette(FileController.readPalette("palettes.dat"));
+            palette.setPalette(files.readPalette("palettes.dat"));
             paletteColors.setItems(FXCollections.observableList(palette.getPalette()));
         });
         savePaletteButton.setOnAction(event -> {
-            FileController.savePalette("palettes.dat", palette.getPalette());
+            files.savePalette("palettes.dat", palette.getPalette());
             paletteColors.setItems(FXCollections.observableList(palette.getPalette()));
         });
 
@@ -111,9 +114,18 @@ public class Main extends Application {
         BorderPane leftPane = new BorderPane();
         leftPane.setMinWidth(200);
         leftPane.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
+        Button savePositionButton = new Button("SAVE");
+        Button readPositionButton = new Button("READ");
+        savePositionButton.setOnAction(event -> files.savePosition("position.dat", scale));
+        readPositionButton.setOnAction(event -> {
+            files.readPosition("position.dat", scale);
+            input.recalculate();
+        });
+
         GridPane infoPane = new GridPane();
         infoPane.addRow(0, new Text("Iterations: "), iterationField);
         infoPane.addRow(1, new Text("Increase speed: "), speedField);
+        infoPane.addRow(2, savePositionButton, readPositionButton);
         leftPane.setCenter(infoPane);
 
         BorderPane uiPane = new BorderPane(centerPane, null, rightPane, null, leftPane);
