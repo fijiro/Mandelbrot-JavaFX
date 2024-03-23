@@ -1,23 +1,28 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
 import iiro.toiv.mandelbrotjavafx.Main;
+import javafx.scene.image.Image;
 
 public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
     public static int Z = 100;
-    public Scale scaleController = new Scale();
+    public Scale scaleController;
+
+    public Mandelbrot(Image image) {
+        scaleController = new Scale(image);
+    }
 
     public void calculatePixels(Matrix matrix) {
         double m;
         for (int i = 0; i < matrix.getWidth(); i++) {
-            if (Thread.currentThread().isInterrupted()) return;
             for (int j = 0; j < matrix.getHeight(); j++) {
                 scaleController.assignCoordinates(matrix.get(i, j), i, j);
                 matrix.get(i, j).n = 0;
                 while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
+                    if (Thread.currentThread().isInterrupted()) return;
                     repeatMandelbrot(matrix.get(i, j));
                 }
-                
+
                 // Twice more for smooth coloring
                 repeatMandelbrot(matrix.get(i, j));
                 repeatMandelbrot(matrix.get(i, j));

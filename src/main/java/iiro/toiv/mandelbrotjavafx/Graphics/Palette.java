@@ -22,10 +22,11 @@ public class Palette implements Serializable {
         Color pColor2 = null;
         Color pColor1 = null;
         try {
-            if(distanceInPalette > palette.size() - 1) {
+            if (distanceInPalette > palette.size() - 1) {
                 pColor1 = palette.getLast();
                 pColor2 = palette.getFirst();
-            } else {
+            }
+            else {
                 pColor1 = palette.get((int) Math.floor(distanceInPalette % (palette.size())));
                 pColor2 = palette.get((int) Math.ceil(distanceInPalette % (palette.size())));
             }
@@ -33,7 +34,7 @@ public class Palette implements Serializable {
             System.out.println("dist: " + distanceInPalette + " " + e);
         }
         colorDistance = distanceInPalette - Math.floor(distanceInPalette);
-        if(pColor2 == null || pColor1 == null) {
+        if (pColor2 == null || pColor1 == null) {
             return new Color(1, 0.1, 1, 1);
         }
         return new Color((pColor2.getRed() - pColor1.getRed()) * colorDistance + pColor1.getRed(), (pColor2.getGreen() - pColor1.getGreen()) * colorDistance + pColor1.getGreen(), (pColor2.getBlue() - pColor1.getBlue()) * colorDistance + pColor1.getBlue(), 1);

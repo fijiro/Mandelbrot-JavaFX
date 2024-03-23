@@ -1,12 +1,17 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
 import iiro.toiv.mandelbrotjavafx.Main;
+import javafx.scene.image.Image;
 
 public class Scale {
 
-    private double xMin = -2;
-    private double yMin = -1.5;
-    private double distance = 3;
+    private double xMin = -2, yMin = -1.5, diameter = 3;
+    private double imageWidth, imageHeight;
+
+    public Scale(Image image) {
+        imageWidth = image.getWidth();
+        imageHeight = image.getHeight();
+    }
 
     /**
      * Increases the overall scale of the set
@@ -16,29 +21,29 @@ public class Scale {
     public void zoomLevel(boolean zoomIn) {
         // Zoom in
         double dist2;
-        if (zoomIn) {dist2 = distance / 1.5;}
+        if (zoomIn) {dist2 = diameter / 1.5;}
         // Zoom out
-        else {dist2 = distance * 1.5;}
+        else {dist2 = diameter * 1.5;}
         // Save zoom
-        xMin += (distance - dist2) / 2;
-        yMin += (distance - dist2) / 2;
-        distance = dist2;
+        xMin += (diameter - dist2) / 2;
+        yMin += (diameter - dist2) / 2;
+        diameter = dist2;
     }
 
     public void assignCoordinates(Point point, int xPosition, int yPosition) {
-        point.x0 = getxMin() + (getDistance() / Main.mImage.getWidth() * xPosition);
-        point.y0 = getxMin() + (getDistance() / Main.mImage.getWidth() * yPosition);
+        point.x0 = getxMin() + (getDiameter() / Main.getmImage().getWidth() * xPosition);
+        point.y0 = getyMin() + (getDiameter() / Main.getmImage().getWidth() * yPosition);
         point.x = point.x0;
         point.y = point.y0;
     }
 
     /**
-     * @param x horizontal distance from canvas center
-     * @param y vertical distance from canvas center
+     * @param x horizontal diameter from canvas center
+     * @param y vertical diameter from canvas center
      */
     public void centerTo(double x, double y) {
-        xMin += x / Main.mImage.getWidth() * distance - distance / 2;
-        yMin += y / Main.mImage.getHeight() * distance - distance / 2;
+        xMin += x / Main.getmImage().getWidth() * diameter - diameter / 2;
+        yMin += y / Main.getmImage().getHeight() * diameter - diameter / 2;
     }
 
     public double getxMin() {
@@ -49,7 +54,7 @@ public class Scale {
         return yMin;
     }
 
-    public double getDistance() {
-        return distance;
+    public double getDiameter() {
+        return diameter;
     }
 }
