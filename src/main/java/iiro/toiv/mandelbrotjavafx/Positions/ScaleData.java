@@ -2,12 +2,12 @@ package iiro.toiv.mandelbrotjavafx.Positions;
 
 import javafx.scene.image.Image;
 
-public class Scale {
+public class ScaleData {
 
     private double xMin = -2, yMin = -1.5, diameter = 3;
     private final double imageWidth, imageHeight;
 
-    public Scale(Image image) {
+    public ScaleData(Image image) {
         imageWidth = image.getWidth();
         imageHeight = image.getHeight();
     }

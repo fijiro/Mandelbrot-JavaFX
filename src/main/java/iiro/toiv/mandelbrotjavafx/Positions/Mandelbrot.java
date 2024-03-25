@@ -5,18 +5,18 @@ public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
     public static int Z = 1000;
     private final Matrix matrix;
-    public Scale scaleController;
+    public ScaleData scaleData;
 
     public Mandelbrot(Image image, Matrix matrix) {
         this.matrix = matrix;
-        scaleController = new Scale(image);
+        scaleData = new ScaleData(image);
     }
 
     public void calculatePixels(Matrix matrix) {
         double m;
         for (int i = 0; i < matrix.getWidth(); i++) {
             for (int j = 0; j < matrix.getHeight(); j++) {
-                scaleController.assignCoordinates(matrix.get(i, j), i, j);
+                scaleData.assignCoordinates(matrix.get(i, j), i, j);
                 matrix.get(i, j).n = 0;
                 while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
                     if (Thread.currentThread().isInterrupted()) return;
