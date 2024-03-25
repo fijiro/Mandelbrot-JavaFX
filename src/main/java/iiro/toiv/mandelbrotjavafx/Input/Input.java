@@ -2,12 +2,9 @@ package iiro.toiv.mandelbrotjavafx.Input;
 
 import iiro.toiv.mandelbrotjavafx.Files.Files;
 import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
-import iiro.toiv.mandelbrotjavafx.Graphics.Palette;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
-import iiro.toiv.mandelbrotjavafx.Positions.ScaleData;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
