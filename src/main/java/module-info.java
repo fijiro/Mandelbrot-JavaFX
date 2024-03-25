@@ -9,6 +9,4 @@ module iiro.toiv.mandelbrotjavafx {
     opens iiro.toiv.mandelbrotjavafx.Input;
     exports iiro.toiv.mandelbrotjavafx.Positions;
     opens iiro.toiv.mandelbrotjavafx.Positions;
-    exports iiro.toiv.mandelbrotjavafx.tests;
-    opens iiro.toiv.mandelbrotjavafx.tests;
 }
