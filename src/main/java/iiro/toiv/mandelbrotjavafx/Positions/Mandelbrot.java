@@ -3,7 +3,7 @@ import javafx.scene.image.Image;
 
 public class Mandelbrot implements Runnable {
     //TODO: add support for multithreading
-    public static int Z = 100;
+    public static int Z = 1000;
     private final Matrix matrix;
     public Scale scaleController;
 
@@ -32,7 +32,6 @@ public class Mandelbrot implements Runnable {
                 double val = Math.log(Math.log(m)) / Math.log(2.0f);
                 if (Double.isNaN(val)) matrix.get(i, j).mu = matrix.get(i, j).n;
                 else matrix.get(i, j).mu = Math.clamp(matrix.get(i, j).n - val, 0.0f, matrix.get(i, j).n);
-                //Input.graphics.drawPixel(matrix.get(i, j), i, j);
             }
         }
     }
