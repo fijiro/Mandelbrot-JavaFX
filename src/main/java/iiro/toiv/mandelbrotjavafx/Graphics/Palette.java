@@ -2,11 +2,10 @@ package iiro.toiv.mandelbrotjavafx.Graphics;
 
 import javafx.scene.paint.Color;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Palette implements Serializable {
-    public enum PaletteType {BlueToWhite, BlueToYellow, BlueToWhiteToYellow}
+public class Palette {
+    public enum PaletteType {BlueToWhite, BlueToYellow, BlueToWhiteToYellow, Rainbow}
 
     private transient ArrayList<Color> palette = new ArrayList<>();
     private double colorSpeed = 32;
@@ -62,7 +61,8 @@ public class Palette implements Serializable {
                 palette.add(new Color(1, 0, 0, 1));
                 palette.add(new Color(0, 1, 0, 1));
                 break;
-
+            case Rainbow:
+                break;
             default:
                 break;
         }
@@ -77,7 +77,8 @@ public class Palette implements Serializable {
     }
 
     public void addColor(Double r, Double g, Double b) {
-        palette.add(new Color(r, g, b, 1));
+
+        palette.add(new Color(Math.clamp(r,0,1), Math.clamp(g,0,1), Math.clamp(b,0,1), 1));
     }
 
     public void removeColor(int index) {

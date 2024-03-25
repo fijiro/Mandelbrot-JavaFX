@@ -1,11 +1,10 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * Holds all pixels in canvas in an ArrayList. These pixels are accessible through Matrix.get(x, y).
  */
-public class Matrix implements Serializable{
+public class Matrix {
 
     private final ArrayList<Point> matrixData = new ArrayList<>();
     private int matrixRows, matrixColumns;
