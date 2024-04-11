@@ -57,21 +57,12 @@ public class Palette extends ControllerClass implements PaletteInterface {
     public void addPalette(String paletteName, ArrayList<Color> palette) {
         paletteMap.clear();
         generatePaletteMap();
-
-        System.out.println("Adding new palette: " + palette);
         this.palette = palette;
         this.paletteName = paletteName;
-        for (Color color : this.palette) {
-            System.out.println(color);
-        }
         //Add palette to map
         paletteMap.put(paletteName, new ArrayList<>(palette));
     }
     public void setPalette(String name) {
-        if (!paletteMap.containsKey(name)) {
-            System.out.println("NO PALETTE WITH NAME: " + name);
-        }
-        System.out.println("SELECT PALETTE: " + name);
         this.paletteName = name;
         this.palette = paletteMap.get(paletteName);
     }
@@ -109,7 +100,7 @@ public class Palette extends ControllerClass implements PaletteInterface {
                 pColor2 = palette.get((int) Math.ceil(distanceInPalette % (palette.size())));
             }
         } catch (Exception e) {
-            System.out.println("dist: " + distanceInPalette + " " + e);
+            System.out.println("distError: " + distanceInPalette + " " + e);
         }
         colorDistance = distanceInPalette - Math.floor(distanceInPalette);
         if (pColor2 == null || pColor1 == null) {
