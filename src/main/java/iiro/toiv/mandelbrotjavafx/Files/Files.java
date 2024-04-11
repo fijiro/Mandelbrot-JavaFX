@@ -8,6 +8,10 @@ import javafx.scene.paint.Color;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * Files -Class handles all interactions when saving to and reading from files. Only the current position and one
+ * palette can be saved.
+ */
 public class Files extends ControllerClass {
 
     public void savePalette(String path, String name, Palette palette) {
