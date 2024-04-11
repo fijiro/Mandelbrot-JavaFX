@@ -5,13 +5,11 @@ import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
@@ -22,12 +20,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * Main.java is resposible for drawing all JavaFX elements and starting the Application.
+ * Main.java is resposible for drawing all JavaFX elements and starting the Application thread.
  */
 public class Main extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
+
     @Override
     public void start(Stage primaryStage) {
         //Create matrix that holds values for each pixel
@@ -47,7 +44,7 @@ public class Main extends Application {
         centerPane.setBackground(new Background(new BackgroundFill(Color.DARKBLUE, null, null)));
         centerPane.setLayoutX(0);
 
-        //right pane, holds fields related to palettes.
+        //right pane, holds fields related to palettes and coloring.
         BorderPane rightPane = new BorderPane();
         rightPane.setMinWidth(300);
         rightPane.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, null, null)));
@@ -57,27 +54,42 @@ public class Main extends Application {
         greenField.setMaxWidth(50);
         TextField blueField = new TextField("1");
         blueField.setMaxWidth(50);
+
         Button addColorButton = new Button(" + ");
         Button removeColorButton = new Button(" - ");
         Button readPaletteButton = new Button("READ");
         Button savePaletteButton = new Button("SAVE");
-
+        Button moveUpButton = new Button("UP");
+        Button moveDownButton = new Button("DOWN");
+        TextField nameField = new TextField("PaletteName");
         ListView<Color> paletteColors = new ListView<>();
         paletteColors.setCellFactory(param -> new PaletteCellFactory());
         paletteColors.setMaxWidth(160);
         paletteColors.setMaxHeight(300);
 
-        TextField speedField = new TextField("1");
-        speedField.setMaxWidth(50);
+        TextField minSpeedField = new TextField("0.1");
+        TextField maxSpeedField = new TextField("100.0");
+        minSpeedField.setMaxWidth(50);
+        maxSpeedField.setMaxWidth(50);
+
+        Slider speedSlider = new Slider();
+        speedSlider.setValue(32);
+        speedSlider.setMin(0.1);
+        speedSlider.setMax(100);
+
+        ChoiceBox<String> paletteChoice = new ChoiceBox<>();
+        paletteChoice.setItems(FXCollections.observableList(input.graphics.palette.getKeys()));
 
         GridPane colorPicker = new GridPane();
         colorPicker.setAlignment(Pos.BOTTOM_CENTER);
         colorPicker.setPadding(new Insets(10));
         colorPicker.add(new Text("Use values 0 - 1."), 0, 0, 3, 1);
-        colorPicker.addRow(1, new HBox(5, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField));
-        colorPicker.addRow(2, new HBox(5, new Text("Increase speed: "), speedField));
-        colorPicker.addRow(3, new HBox(5, addColorButton, removeColorButton));
-        colorPicker.addRow(4, new HBox(5, readPaletteButton, savePaletteButton));
+        colorPicker.addRow(1, new HBox(5, minSpeedField, speedSlider, maxSpeedField));
+        colorPicker.addRow(2, paletteChoice);
+        colorPicker.addRow(3, new HBox(5, new Text("R:"), redField, new Text("G:"), greenField, new Text("B:"), blueField));
+        colorPicker.addRow(4, new HBox(5, addColorButton, removeColorButton, moveUpButton, moveDownButton));
+        colorPicker.addRow(5, new HBox(5, readPaletteButton, savePaletteButton, nameField));
+
         //TODO: remove gridlines from final version
         colorPicker.setGridLinesVisible(true);
 
@@ -88,26 +100,38 @@ public class Main extends Application {
         BorderPane leftPane = new BorderPane();
         leftPane.setMinWidth(200);
         leftPane.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, null, null)));
+        //TODO: add uneditable fields that show scale and position data.
+        TextField xPositionField = new TextField("");
+        xPositionField.setEditable(false);
+        TextField yPositionField = new TextField("");
+        yPositionField.setEditable(false);
+
+        GridPane infoGrid = new GridPane();
         Button savePositionButton = new Button("SAVE");
         Button readPositionButton = new Button("READ");
         TextField iterationField = new TextField("1000");
         iterationField.setMaxWidth(100);
-        //TODO: add uneditable fields that show scale and position data.
-        //TextField xPositionField ...
-
-        GridPane infoGrid = new GridPane();
         infoGrid.addRow(0, new Text("Iterations: "), iterationField);
         infoGrid.addRow(1, savePositionButton, readPositionButton);
         leftPane.setCenter(infoGrid);
 
+
+        mImageView.setOnMouseReleased(input::imageMouseAction);
+        mImageView.setOnScroll(input::ImageScrollAction);
         addColorButton.setOnAction(event -> input.addColorAction(redField, greenField, blueField, paletteColors));
         removeColorButton.setOnAction(event -> input.removeColorAction(paletteColors));
-        readPaletteButton.setOnAction(event -> input.readPaletteAction(paletteColors));
-        savePaletteButton.setOnAction(event -> input.savePaletteAction(paletteColors));
+        moveUpButton.setOnAction(event -> input.moveUpAction(paletteColors));
+        moveDownButton.setOnAction(event -> input.moveDownAction(paletteColors));
+        readPaletteButton.setOnAction(event -> input.readPaletteAction(paletteColors, paletteChoice));
+        savePaletteButton.setOnAction(event -> input.savePaletteAction(paletteColors, nameField, paletteChoice));
         savePositionButton.setOnAction(event -> input.savePositionAction());
         readPositionButton.setOnAction(event -> input.readPositionAction());
         iterationField.setOnAction(event -> input.iterationFieldAction(iterationField));
-        speedField.setOnAction(event -> input.speedFieldAction(speedField));
+        speedSlider.setOnMouseDragged(event -> input.speedSliderAction(speedSlider));
+        minSpeedField.setOnAction(event -> input.speedFieldAction(minSpeedField, speedSlider, false));
+        maxSpeedField.setOnAction(event -> input.speedFieldAction(maxSpeedField, speedSlider, true));
+        paletteChoice.setOnAction(event -> input.paletteChoiceAction(paletteChoice, paletteColors));
+
         //Reads saved palette on startup.
         readPaletteButton.fire();
 
@@ -120,7 +144,8 @@ public class Main extends Application {
     }
 
     /**
-     * PaletteCellFactory is required to customize the paletteColors ListView.
+     * PaletteCellFactory is required to customize the paletteColors ListView. Shows colors as rectangles with black
+     * outlines.
      */
     private static class PaletteCellFactory extends ListCell<Color> {
         @Override
