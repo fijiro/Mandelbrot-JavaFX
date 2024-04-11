@@ -15,7 +15,9 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
@@ -39,10 +41,12 @@ public class Input extends ControllerClass {
         graphics = new Graphics(image);
     }
 
-    public void imageMouseAction(MouseEvent event) {
+    public void imageMouseAction(MouseEvent event, Text x, Text y) {
         //from 0 - imageView.getWidth().
         mandelbrot.scaleData.centerTo(event.getX(), event.getY());
-        //start timeline to calculate pixels
+        //calculate pixels
+        x.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getxCenter())));
+        y.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getyCenter())));
         recalculate();
     }
 

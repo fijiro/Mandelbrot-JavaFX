@@ -101,22 +101,20 @@ public class Main extends Application {
         leftPane.setMinWidth(200);
         leftPane.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, null, null)));
         //TODO: add uneditable fields that show scale and position data.
-        TextField xPositionField = new TextField("");
-        xPositionField.setEditable(false);
-        TextField yPositionField = new TextField("");
-        yPositionField.setEditable(false);
-
+        Text xPositionField = new Text("0.00");
+        Text yPositionField = new Text("0.00");
         GridPane infoGrid = new GridPane();
         Button savePositionButton = new Button("SAVE");
         Button readPositionButton = new Button("READ");
         TextField iterationField = new TextField("1000");
-        iterationField.setMaxWidth(100);
+        iterationField.setMaxWidth(50);
         infoGrid.addRow(0, new Text("Iterations: "), iterationField);
-        infoGrid.addRow(1, savePositionButton, readPositionButton);
+        infoGrid.addRow(1, new Text("X, Y: "), xPositionField, yPositionField);
+        infoGrid.addRow(2, savePositionButton, readPositionButton);
         leftPane.setCenter(infoGrid);
 
 
-        mImageView.setOnMouseReleased(input::imageMouseAction);
+        mImageView.setOnMouseReleased(event -> input.imageMouseAction(event, xPositionField, yPositionField));
         mImageView.setOnScroll(input::ImageScrollAction);
         addColorButton.setOnAction(event -> input.addColorAction(redField, greenField, blueField, paletteColors));
         removeColorButton.setOnAction(event -> input.removeColorAction(paletteColors));
