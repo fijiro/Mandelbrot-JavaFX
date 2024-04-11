@@ -18,8 +18,7 @@ public class Files extends ControllerClass {
                 objectOutputStream.writeDouble(color.getGreen());
                 objectOutputStream.writeDouble(color.getBlue());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
         }
         readPalette(path, palette);
     }
@@ -32,8 +31,7 @@ public class Files extends ControllerClass {
                 readPalette.add(new Color(objectInputStream.readDouble(), objectInputStream.readDouble(), objectInputStream.readDouble(), 1));
             }
             palette.addPalette(readKey, readPalette);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException ignored) {
         }
     }
 
@@ -42,8 +40,7 @@ public class Files extends ControllerClass {
             objectOutputStream.writeDouble(scaleData.getxMin());
             objectOutputStream.writeDouble(scaleData.getyMin());
             objectOutputStream.writeDouble(scaleData.getDiameter());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
         }
     }
 
