@@ -1,6 +1,7 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
 
 import java.util.ArrayList;
+
 /**
  * Holds all pixels in canvas in an ArrayList. These pixels are accessible through Matrix.get(x, y).
  */
@@ -31,8 +32,8 @@ public class Matrix {
 
     public void resize(int w, int h) {
         matrixData.clear();
-        matrixRows = h;
         matrixColumns = w;
+        matrixRows = h;
 
         //Makes creating pixels faster because arraylist's size doesn't need to be gradually increased.
         matrixData.ensureCapacity(w * h);

@@ -68,4 +68,11 @@ public class ScaleData {
     public void setDiameter(double diameter) {
         this.diameter = diameter;
     }
+
+    public double getxCenter() {
+        return xMin + diameter / 2;
+    }
+    public double getyCenter() {
+        return yMin + diameter / 2;
+    }
 }

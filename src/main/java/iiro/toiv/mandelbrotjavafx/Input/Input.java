@@ -1,23 +1,30 @@
 package iiro.toiv.mandelbrotjavafx.Input;
 
+import iiro.toiv.mandelbrotjavafx.ControllerClass;
 import iiro.toiv.mandelbrotjavafx.Files.Files;
 import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
-public class Input {
-    public final Mandelbrot mandelbrot;
+public class Input extends ControllerClass {
     public final Graphics graphics;
     private final Matrix matrix;
+    private final Mandelbrot mandelbrot;
     private final Files files = new Files();
     private final WritableImage image;
     private final ExecutorService executor = new ForkJoinPool(1);
@@ -32,50 +39,62 @@ public class Input {
         image = (WritableImage) imageView.getImage();
         mandelbrot = new Mandelbrot(image, matrix);
         graphics = new Graphics(image);
-
-        imageView.setOnMouseReleased(event -> {
-            //from 0 - imageView.getWidth().
-            mandelbrot.scaleData.centerTo(event.getX(), event.getY());
-            //start timeline to calculate pixels
-            recalculate();
-
-        });
-        imageView.setOnScroll(event -> {
-            //zooms in if scrolled up, out if scrolled down
-            mandelbrot.scaleData.zoomLevel(event.getDeltaY() > 0);
-            recalculate();
-
-        });
     }
+
+    public void imageMouseAction(MouseEvent event, Text x, Text y) {
+        //from 0 - imageView.getWidth().
+        mandelbrot.scaleData.centerTo(event.getX(), event.getY());
+        //calculate pixels
+        x.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getxCenter())));
+        y.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getyCenter())));
+        recalculate();
+    }
+
+    public void ImageScrollAction(ScrollEvent event) {
+        //zooms in if scrolled up, out if scrolled down
+        mandelbrot.scaleData.zoomLevel(event.getDeltaY() > 0);
+        recalculate();
+    }
+
 
     public void addColorAction(TextField redField, TextField greenField, TextField blueField, ListView<Color> paletteColors) {
         try {
-            graphics.palette.addColor(Double.parseDouble(redField.getText()), Double.parseDouble(greenField.getText()),
-                    Double.parseDouble(blueField.getText()));
+            graphics.palette.addColor(Double.parseDouble(redField.getText()), Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText()));
         } catch (NumberFormatException | NullPointerException e) {
-            //System.out.println("Given values are not between 0-1");
-            return;
+            throw new RuntimeException(e);
         }
         paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
     }
 
     public void removeColorAction(ListView<Color> paletteColors) {
         if (!graphics.palette.getPalette().isEmpty()) {
-            graphics.palette.removeColor(paletteColors.getSelectionModel().getSelectedIndex() < 0 ?
-                    graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex());
+            graphics.palette.removeColor(paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex());
             paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
         }
     }
 
-    public void speedFieldAction(TextField field) {
-        double speed;
+    public void speedSliderAction(Slider slider) {
+        graphics.palette.setSpeed(slider.getValue());
+        //For smooth coloring
+        graphics.drawPixels(matrix);
+    }
+
+    public void speedFieldAction(TextField field, Slider slider, boolean isMax) {
+        double value;
         try {
-            speed = Double.parseDouble(field.getText());
+            value = Double.parseDouble(field.getText());
         } catch (NullPointerException | NumberFormatException e) {
             return;
         }
-        graphics.palette.adjustSpeed(speed);
-        //For smooth coloring
+        if (isMax) {
+            slider.setMax(Math.max(slider.getMin() + 1, value));
+            field.setText(String.valueOf(slider.getMax()));
+        }
+        else {
+            slider.setMin(Math.min(slider.getMax() - 1, value));
+            field.setText(String.valueOf(slider.getMin()));
+        }
+        slider.setValue(Math.clamp(slider.getValue(), slider.getMin(), slider.getMax()));
         graphics.drawPixels(matrix);
     }
 
@@ -89,14 +108,29 @@ public class Input {
         Mandelbrot.Z = z;
         recalculate();
     }
-    public void readPaletteAction(ListView<Color> paletteColors) {
+
+    public void paletteChoiceAction(ChoiceBox<String> paletteChoice, ListView<Color> paletteColors) {
+        //Change default from null to saved palette
+        if (paletteChoice.getValue() == null) paletteChoice.setValue(graphics.palette.getPaletteName());
+        graphics.palette.setPalette(paletteChoice.getValue());
+        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+    }
+
+    public void readPaletteAction(ListView<Color> colorListView, ChoiceBox<String> paletteChoice) {
         files.readPalette("palettes.dat", graphics.palette);
-        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+        colorListView.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+        paletteChoice.setItems(FXCollections.observableList(graphics.palette.getKeys()));
+        paletteChoice.setValue(graphics.palette.getPaletteName());
+
     }
-    public void savePaletteAction(ListView<Color> paletteColors) {
-        files.savePalette("palettes.dat", graphics.palette.getPalette());
-        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+
+    public void savePaletteAction(ListView<Color> colorListView, TextField nameTextField, ChoiceBox<String> paletteChoice) {
+        files.savePalette("palettes.dat", nameTextField.getText(), graphics.palette);
+        colorListView.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+        paletteChoice.setItems(FXCollections.observableList(graphics.palette.getKeys()));
+        paletteChoice.setValue(graphics.palette.getPaletteName());
     }
+
     public void savePositionAction() {
         files.savePosition("position.dat", mandelbrot.scaleData);
     }
@@ -104,5 +138,24 @@ public class Input {
     public void readPositionAction() {
         files.readPosition("position.dat", mandelbrot.scaleData);
         recalculate();
+    }
+
+    public void moveUpAction(ListView<Color> paletteColors) {
+        int index = paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex();
+        if (index - 1 < 0) return;
+        graphics.palette.swapColors(index, index - 1);
+        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+    }
+
+    public void moveDownAction(ListView<Color> paletteColors) {
+        int index = paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex();
+        if (index + 2 > paletteColors.getItems().size()) return;
+        graphics.palette.swapColors(index, index + 1);
+        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+    }
+
+    @Override
+    public String toString() {
+        return "Input toString text";
     }
 }

@@ -1,13 +1,14 @@
 package iiro.toiv.mandelbrotjavafx.Graphics;
 
 
+import iiro.toiv.mandelbrotjavafx.ControllerClass;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-public class Graphics {
+public class Graphics extends ControllerClass {
     private final PixelWriter imageWriter;
     public Palette palette = new Palette();
 
@@ -29,5 +30,10 @@ public class Graphics {
                 imageWriter.setColor(i, j, color);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Graphics toString method";
     }
 }
