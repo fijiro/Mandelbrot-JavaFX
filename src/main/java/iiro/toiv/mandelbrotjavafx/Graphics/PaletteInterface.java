@@ -3,14 +3,21 @@ package iiro.toiv.mandelbrotjavafx.Graphics;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mandatory interface.
  */
 public interface PaletteInterface {
-    void generatePalette(String pType);
+    void generatePaletteMap();
 
-    void setPalette(ArrayList<Color> palette);
+    void addPalette(String paletteName, ArrayList<Color> palette);
+
+    void setPalette(String name);
+
+    String getPaletteName();
+
+    List<String> getKeys();
 
     ArrayList<Color> getPalette();
 

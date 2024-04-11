@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Palette is responsible for handling everything about coloring.
  */
-public class Palette extends ControllerClass /*implements PaletteInterface*/ {
+public class Palette extends ControllerClass implements PaletteInterface {
     @Override
     public String toString() {
         return "Palette toString Method";
