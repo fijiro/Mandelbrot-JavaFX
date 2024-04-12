@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
  * Mandelbrot -class contains methods to calculate pixel escape time and ScaleData.
  */
 public class Mandelbrot implements Runnable {
-    //TODO: add support for multithreading
     public static int Z = 1000;
     private final Matrix matrix;
     public ScaleData scaleData;
