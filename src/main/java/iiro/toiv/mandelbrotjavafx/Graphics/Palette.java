@@ -6,25 +6,40 @@ import javafx.scene.paint.Color;
 import java.util.*;
 
 /**
- * Palette is responsible for handling everything about coloring.
+ * Palette is responsible for storing, calculating and setting palettes and coloring data.
  */
 public class Palette extends ControllerClass implements PaletteInterface {
     @Override
     public String toString() {
         return "Palette toString Method";
     }
+
+    /**
+     * paletteMap holds all key-value pairs of selectable palettes.
+     */
     private final Map<String, ArrayList<Color>> paletteMap = new HashMap<>();
+    /**
+     * Name of the selected palette, same as the key for current palette in paletteMap if entry exists.
+     */
     private String paletteName;
 
+    /**
+     * palette holds the current selected list of colors.
+     */
     private ArrayList<Color> palette = new ArrayList<>();
+    /**
+     * colorSpeed is the offset from coloring default.
+     */
     private double colorSpeed = 32;
 
+    /**
+     * Assign default map on construction.
+     */
     public Palette() {
-        generatePaletteMap();
+        generateDefaultMap();
     }
 
-    // Clears palette and generates new one
-    public void generatePaletteMap() {
+    public void generateDefaultMap() {
         palette.clear();
         palette.add(new Color(0, 1, 0, 1));
         palette.add(new Color(1, 1, 1, 1));
@@ -56,7 +71,7 @@ public class Palette extends ControllerClass implements PaletteInterface {
 
     public void addPalette(String paletteName, ArrayList<Color> palette) {
         paletteMap.clear();
-        generatePaletteMap();
+        generateDefaultMap();
         this.palette = palette;
         this.paletteName = paletteName;
         //Add palette to map
@@ -83,7 +98,7 @@ public class Palette extends ControllerClass implements PaletteInterface {
     public Color getPaletteColor(double mu) {
         // Calculate how far the color is in the loop, from 0 to 1
         double colorDistance = mu / colorSpeed - Math.floor(mu / colorSpeed);
-        //default to black
+        // Default to black
         if (palette.isEmpty() || colorDistance == 1) return new Color(0, 0, 0, 1);
 
         // Assign the point of how far in palette the color is, from 0 - palette.size()

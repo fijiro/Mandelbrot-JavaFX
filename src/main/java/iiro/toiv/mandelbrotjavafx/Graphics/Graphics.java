@@ -8,17 +8,25 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+/**
+ * Graphics class contains all thing related to drawing the mandelbrot set, such as Palette.
+ */
 public class Graphics extends ControllerClass {
+    /**
+     * imageWriter colors each pixel on screen.
+     */
     private final PixelWriter imageWriter;
     public Palette palette = new Palette();
 
-    public Graphics(WritableImage canvas) {
-        imageWriter = canvas.getPixelWriter();
+    /**
+     * @param image Image that the matrix is drawn on.
+     */
+    public Graphics(WritableImage image) {
+        imageWriter = image.getPixelWriter();
     }
 
     /**
-     * Draws and colors each pixel based on their mu (escape time) from palette.
-     *
+     * Draws and colors each pixel based on their mu (normalized escape time) from palette.
      * @param matrix matrix containing pixels.
      */
     public void drawPixels(Matrix matrix) {
