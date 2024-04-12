@@ -95,7 +95,6 @@ public class Main extends Application {
         BorderPane leftPane = new BorderPane();
         leftPane.setMinWidth(250);
         leftPane.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, null, null)));
-        //TODO: add uneditable fields that show scale and position data.
         Text xPositionField = new Text("0.00");
         Text yPositionField = new Text("0.00");
         GridPane infoGrid = new GridPane();
