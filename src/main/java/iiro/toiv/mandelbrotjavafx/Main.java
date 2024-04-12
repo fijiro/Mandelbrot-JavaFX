@@ -78,7 +78,7 @@ public class Main extends Application {
         GridPane palettePane = new GridPane();
         palettePane.setAlignment(Pos.BOTTOM_CENTER);
         palettePane.setPadding(new Insets(10));
-        palettePane.add(new Text("Use values 0 - 1."), 0, 0, 3, 1);
+        //palettePane.add(new Text("Use values 0 - 1."), 0, 0, 3, 1);
         palettePane.addRow(1, new HBox(5, minSpeedField, speedSlider, maxSpeedField));
         palettePane.addRow(2, paletteChoice);
         palettePane.addRow(3, new HBox(5, readPaletteButton, savePaletteButton, nameField));
