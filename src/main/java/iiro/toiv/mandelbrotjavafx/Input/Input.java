@@ -5,6 +5,8 @@ import iiro.toiv.mandelbrotjavafx.Files.Files;
 import iiro.toiv.mandelbrotjavafx.Graphics.Graphics;
 import iiro.toiv.mandelbrotjavafx.Positions.Mandelbrot;
 import iiro.toiv.mandelbrotjavafx.Positions.Matrix;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -16,40 +18,74 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
+/**
+ * Input contains all methods for handling input actions. Basically superclass
+ */
 public class Input extends ControllerClass {
-    public final Graphics graphics;
+    /**
+     * graphics object, used to access palette and mandelbrot drawing.
+     */
+    private final Graphics graphics;
     private final Matrix matrix;
     private final Mandelbrot mandelbrot;
     private final Files files = new Files();
     private final WritableImage image;
-    private final ExecutorService executor = new ForkJoinPool(1);
+    private final ExecutorService calculationExecutor = new ForkJoinPool(1);
 
+    /**
+     * Wipes old matrix data and starts a new thread for calculating the pixel escape times.
+     */
     public void recalculate() {
         matrix.resize((int) image.getWidth(), (int) image.getHeight());
-        executor.submit(mandelbrot);
+        calculationExecutor.submit(mandelbrot);
     }
 
+    /**
+     * Constructor for Input
+     *
+     * @param imageView ImageView that the mandelbrot set is drawn on
+     * @param matrix    Matrix that holds data for each pixel
+     */
     public Input(ImageView imageView, Matrix matrix) {
         this.matrix = matrix;
         image = (WritableImage) imageView.getImage();
         mandelbrot = new Mandelbrot(image, matrix);
         graphics = new Graphics(image);
+        recalculate();
+        //Color all pixels 5 times each second
+        Timeline drawLoop = new Timeline(new KeyFrame(Duration.millis(200), event -> graphics.drawPixels(matrix)));
+        drawLoop.setCycleCount(Timeline.INDEFINITE);
+        try (ExecutorService coloringExecutor = new ForkJoinPool(1)) {
+            coloringExecutor.execute(drawLoop::play);
+        }
     }
 
+    /**
+     * Action that handles mouse clicks on the mandelbrot set. Centers to clicked location
+     *
+     * @param event Mouse button pressed event
+     * @param x     Text for x position
+     * @param y     Text for y position
+     */
     public void imageMouseAction(MouseEvent event, Text x, Text y) {
-        //from 0 - imageView.getWidth().
         mandelbrot.scaleData.centerTo(event.getX(), event.getY());
-        //calculate pixels
-        x.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getxCenter())));
-        y.setText(String.valueOf(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getyCenter())));
+        x.setText(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getxCenter()));
+        y.setText(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getyCenter()));
         recalculate();
     }
 
+    /**
+     * Handles mouse wheel scrolling when mouse pointer is on the mandelbrot set. Zooms to the center of the screen
+     * by scroll amount.
+     *
+     * @param event Event for scrolling action.
+     */
     public void ImageScrollAction(ScrollEvent event) {
         //zooms in if scrolled up, out if scrolled down
         mandelbrot.scaleData.zoomLevel(event.getDeltaY() > 0);
@@ -57,6 +93,14 @@ public class Input extends ControllerClass {
     }
 
 
+    /**
+     * Adds a new color at the end of the palette.
+     *
+     * @param redField      TextField for red
+     * @param greenField    TextField for green
+     * @param blueField     TextField for blue
+     * @param paletteColors ListView for palette colors
+     */
     public void addColorAction(TextField redField, TextField greenField, TextField blueField, ListView<Color> paletteColors) {
         try {
             graphics.palette.addColor(Double.parseDouble(redField.getText()), Double.parseDouble(greenField.getText()), Double.parseDouble(blueField.getText()));
@@ -66,6 +110,11 @@ public class Input extends ControllerClass {
         paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
     }
 
+    /**
+     * Removes the selected color from palette.
+     *
+     * @param paletteColors ListView of palette colors.
+     */
     public void removeColorAction(ListView<Color> paletteColors) {
         if (!graphics.palette.getPalette().isEmpty()) {
             graphics.palette.removeColor(paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex());
@@ -73,12 +122,22 @@ public class Input extends ControllerClass {
         }
     }
 
+    /**
+     * Set new color speed when slider is dragged.
+     *
+     * @param slider Slider for color speed
+     */
     public void speedSliderAction(Slider slider) {
         graphics.palette.setSpeed(slider.getValue());
-        //For smooth coloring
-        graphics.drawPixels(matrix);
     }
 
+    /**
+     * Adjust maximum or minimum speed value.
+     *
+     * @param field  TextField that contains the speed value
+     * @param slider Slider for speed
+     * @param isMax  true if the field is ma
+     */
     public void speedFieldAction(TextField field, Slider slider, boolean isMax) {
         double value;
         try {
@@ -98,6 +157,11 @@ public class Input extends ControllerClass {
         graphics.drawPixels(matrix);
     }
 
+    /**
+     * Update maximum iterations through the mandelbrot formula
+     *
+     * @param field TextField that contains the maximum iterations
+     */
     public void iterationFieldAction(TextField field) {
         int z;
         try {
@@ -109,6 +173,12 @@ public class Input extends ControllerClass {
         recalculate();
     }
 
+    /**
+     * Action for selecting a new palette from the ChoiceBox.
+     *
+     * @param paletteChoice ChoiceBox containing different palettes saved in paletteMap
+     * @param paletteColors list of colors for current palette.
+     */
     public void paletteChoiceAction(ChoiceBox<String> paletteChoice, ListView<Color> paletteColors) {
         //Change default from null to saved palette
         if (paletteChoice.getValue() == null) paletteChoice.setValue(graphics.palette.getPaletteName());
@@ -116,30 +186,58 @@ public class Input extends ControllerClass {
         paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
     }
 
-    public void readPaletteAction(ListView<Color> colorListView, ChoiceBox<String> paletteChoice) {
+    /**
+     * Read and use palette colors and name from palettes.dat.
+     *
+     * @param paletteChoice ChoiceBox containing different palettes saved in paletteMap
+     * @param paletteColors list of colors for current palette
+     */
+    public void readPaletteAction(ChoiceBox<String> paletteChoice, ListView<Color> paletteColors) {
         files.readPalette("palettes.dat", graphics.palette);
-        colorListView.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
         paletteChoice.setItems(FXCollections.observableList(graphics.palette.getKeys()));
         paletteChoice.setValue(graphics.palette.getPaletteName());
 
     }
 
-    public void savePaletteAction(ListView<Color> colorListView, TextField nameTextField, ChoiceBox<String> paletteChoice) {
-        files.savePalette("palettes.dat", nameTextField.getText(), graphics.palette);
-        colorListView.setItems(FXCollections.observableList(graphics.palette.getPalette()));
+    /**
+     * Save current palette colors and name from palettes.dat
+     *
+     * @param paletteChoice ChoiceBox containing different palettes saved in paletteMap
+     * @param paletteColors list of colors for current palette
+     * @param paletteName   TextField containing the user-given name for palette.
+     */
+    public void savePaletteAction(ChoiceBox<String> paletteChoice, ListView<Color> paletteColors, TextField paletteName) {
+        files.savePalette("palettes.dat", graphics.palette, paletteName.getText());
+        paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
         paletteChoice.setItems(FXCollections.observableList(graphics.palette.getKeys()));
         paletteChoice.setValue(graphics.palette.getPaletteName());
     }
 
+    /**
+     * Save current position to position.dat.
+     */
     public void savePositionAction() {
         files.savePosition("position.dat", mandelbrot.scaleData);
     }
 
-    public void readPositionAction() {
+    /**
+     * Read saved position from position.dat and relocate to it.
+     *
+     * @param x Text for x position
+     * @param y Text for y position
+     */
+    public void readPositionAction(Text x, Text y) {
         files.readPosition("position.dat", mandelbrot.scaleData);
+        x.setText(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getxCenter()));
+        y.setText(new DecimalFormat("#.##########").format(mandelbrot.scaleData.getyCenter()));
         recalculate();
     }
 
+    /**
+     * Move color up in palette.
+     * @param paletteColors List of palette colors
+     */
     public void moveUpAction(ListView<Color> paletteColors) {
         int index = paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex();
         if (index - 1 < 0) return;
@@ -147,6 +245,10 @@ public class Input extends ControllerClass {
         paletteColors.setItems(FXCollections.observableList(graphics.palette.getPalette()));
     }
 
+    /**
+     * Move color down in palette.
+     * @param paletteColors List of palette colors
+     */
     public void moveDownAction(ListView<Color> paletteColors) {
         int index = paletteColors.getSelectionModel().getSelectedIndex() < 0 ? graphics.palette.getPalette().size() - 1 : paletteColors.getSelectionModel().getSelectedIndex();
         if (index + 2 > paletteColors.getItems().size()) return;
