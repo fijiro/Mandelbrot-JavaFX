@@ -1,4 +1,5 @@
 package iiro.toiv.mandelbrotjavafx.Positions;
+
 import javafx.scene.image.Image;
 
 /**
@@ -11,7 +12,8 @@ public class Mandelbrot implements Runnable {
 
     /**
      * Constructor that assigns matrix and scaledata for image.
-     * @param image Image that matrix is drawn on
+     *
+     * @param image  Image that matrix is drawn on
      * @param matrix matrix of Points
      */
     public Mandelbrot(Image image, Matrix matrix) {
@@ -21,12 +23,13 @@ public class Mandelbrot implements Runnable {
 
     /**
      * Each pixel gets calculated and the mandelbrot formula is repeated here.
+     *
      * @param matrix matrix of Points
      */
-    public void calculatePixels(Matrix matrix) {
+    public void calculatePixels(Matrix matrix, int startRow, int endRow) {
         double mu, normalizedMu;
         for (int i = 0; i < matrix.getWidth(); i++) {
-            for (int j = 0; j < matrix.getHeight(); j++) {
+            for (int j = startRow; j < endRow; j++) {
                 scaleData.assignCoordinates(matrix.get(i, j), i, j);
                 matrix.get(i, j).n = 0;
                 while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
@@ -50,6 +53,7 @@ public class Mandelbrot implements Runnable {
 
     /**
      * Formula for Mandelbrot set.
+     *
      * @param p Point that gets calculated
      */
     private void repeatMandelbrot(Point p) {
@@ -62,6 +66,6 @@ public class Mandelbrot implements Runnable {
 
     @Override
     public void run() {
-        calculatePixels(matrix);
+        calculatePixels(matrix, 0, 100);
     }
 }

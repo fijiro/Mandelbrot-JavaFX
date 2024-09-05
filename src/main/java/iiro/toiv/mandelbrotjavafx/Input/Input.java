@@ -36,15 +36,22 @@ public class Input extends ControllerClass {
     private final Mandelbrot mandelbrot;
     private final Files files = new Files();
     private final WritableImage image;
-    private final ExecutorService calculationExecutor = new ForkJoinPool(1);
+    private final ExecutorService calculationExecutor = new ForkJoinPool();
 
     /**
-     * Wipes old matrix data and starts a new thread for calculating the pixel escape times.
+     * Wipes old matrix data and starts threads for calculating the pixel escape times.
      */
     public void recalculate() {
         matrix.resize((int) image.getWidth(), (int) image.getHeight());
-        calculationExecutor.submit(mandelbrot);
+        int numberOfThreads = Runtime.getRuntime().availableProcessors();  // Use all available CPU cores
+        int rowsPerThread = matrix.getHeight() / numberOfThreads;
+        for (int i = 0; i < numberOfThreads; i++) {
+            int startRow = i * rowsPerThread;
+            int endRow = (i == numberOfThreads - 1) ? matrix.getHeight() : (i + 1) * rowsPerThread;
+            calculationExecutor.submit(() -> mandelbrot.calculatePixels(matrix, startRow, endRow));
+        }
     }
+
 
     /**
      * Constructor for Input
@@ -236,6 +243,7 @@ public class Input extends ControllerClass {
 
     /**
      * Move color up in palette.
+     *
      * @param paletteColors List of palette colors
      */
     public void moveUpAction(ListView<Color> paletteColors) {
@@ -247,6 +255,7 @@ public class Input extends ControllerClass {
 
     /**
      * Move color down in palette.
+     *
      * @param paletteColors List of palette colors
      */
     public void moveDownAction(ListView<Color> paletteColors) {
