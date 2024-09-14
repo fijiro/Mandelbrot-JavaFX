@@ -31,22 +31,23 @@ public class Mandelbrot implements Runnable {
         for (int i = 0; i < matrix.getWidth(); i++) {
             if (Thread.currentThread().isInterrupted()) return;
             for (int j = startRow; j < endRow; j++) {
-                scaleData.assignCoordinates(matrix.get(i, j), i, j);
-                matrix.get(i, j).n = 0;
-                while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
-                    repeatMandelbrot(matrix.get(i, j));
+                Point p = matrix.get(i, j);
+                scaleData.assignCoordinates(p, i, j);
+                p.n = 0;
+                while (p.n < Z && Math.pow(p.x, 2) + Math.pow(p.y, 2) <= 4) {
+                    repeatMandelbrot(p);
                 }
 
                 // Twice more for smooth coloring.
-                repeatMandelbrot(matrix.get(i, j));
-                repeatMandelbrot(matrix.get(i, j));
+                repeatMandelbrot(p);
+                repeatMandelbrot(p);
 
                 // Assign normalizedMu n from 0 to 1 for smooth coloring:
-                mu = Math.sqrt(matrix.get(i, j).x * matrix.get(i, j).x + matrix.get(i, j).y * matrix.get(i, j).y);
+                mu = Math.sqrt(p.x * p.x + p.y * p.y);
                 normalizedMu = Math.log(Math.log(mu)) / Math.log(2.0f);
                 // Null coalescing
-                if (Double.isNaN(normalizedMu)) matrix.get(i, j).mu = matrix.get(i, j).n;
-                else matrix.get(i, j).mu = Math.clamp(matrix.get(i, j).n - normalizedMu, 0.0f, matrix.get(i, j).n);
+                /*if (Double.isNaN(normalizedMu)) p.mu = p.n;
+                else*/ p.mu = Math.clamp(p.n - normalizedMu, 0.0f, p.n);
             }
         }
     }
@@ -57,16 +58,9 @@ public class Mandelbrot implements Runnable {
      * @param p Point that gets calculated
      */
     private void repeatMandelbrot(Point p) {
-        double x = p.x;
-        double y = p.y;
-        double x0 = p.x0;
-        double y0 = p.y0;
-
-        double xSquared = x * x;
-        double ySquared = y * y;
-
-        p.x = xSquared - ySquared + x0;
-        p.y = 2 * x * y + y0;
+        double temp = p.x * p.x - p.y * p.y + p.x0;
+        p.y = 2 * p.x * p.y + p.y0;
+        p.x = temp;
         p.n++;
     }
 
