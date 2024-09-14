@@ -29,11 +29,11 @@ public class Mandelbrot implements Runnable {
     public void calculatePixels(Matrix matrix, int startRow, int endRow) {
         double mu, normalizedMu;
         for (int i = 0; i < matrix.getWidth(); i++) {
+            if (Thread.currentThread().isInterrupted()) return;
             for (int j = startRow; j < endRow; j++) {
                 scaleData.assignCoordinates(matrix.get(i, j), i, j);
                 matrix.get(i, j).n = 0;
                 while (matrix.get(i, j).n < Z && Math.pow(matrix.get(i, j).x, 2) + Math.pow(matrix.get(i, j).y, 2) <= 4) {
-                    if (Thread.currentThread().isInterrupted()) return;
                     repeatMandelbrot(matrix.get(i, j));
                 }
 
@@ -57,10 +57,16 @@ public class Mandelbrot implements Runnable {
      * @param p Point that gets calculated
      */
     private void repeatMandelbrot(Point p) {
-        double temp;
-        temp = p.x * p.x - p.y * p.y + p.x0;
-        p.y = 2 * p.x * p.y + p.y0;
-        p.x = temp;
+        double x = p.x;
+        double y = p.y;
+        double x0 = p.x0;
+        double y0 = p.y0;
+
+        double xSquared = x * x;
+        double ySquared = y * y;
+
+        p.x = xSquared - ySquared + x0;
+        p.y = 2 * x * y + y0;
         p.n++;
     }
 
