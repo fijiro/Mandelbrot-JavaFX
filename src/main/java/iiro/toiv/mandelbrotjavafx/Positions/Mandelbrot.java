@@ -7,17 +7,14 @@ import javafx.scene.image.Image;
  */
 public class Mandelbrot  {
     public static int Z = 1000;
-    private final Matrix matrix;
     public ScaleData scaleData;
 
     /**
      * Constructor that assigns matrix and scaledata for image.
      *
      * @param image  Image that matrix is drawn on
-     * @param matrix matrix of Points
      */
-    public Mandelbrot(Image image, Matrix matrix) {
-        this.matrix = matrix;
+    public Mandelbrot(Image image) {
         scaleData = new ScaleData(image);
     }
 

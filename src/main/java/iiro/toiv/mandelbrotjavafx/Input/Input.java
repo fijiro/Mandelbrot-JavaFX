@@ -62,7 +62,7 @@ public class Input extends ControllerClass {
     public Input(ImageView imageView, Matrix matrix) {
         this.matrix = matrix;
         image = (WritableImage) imageView.getImage();
-        mandelbrot = new Mandelbrot(image, matrix);
+        mandelbrot = new Mandelbrot(image);
         graphics = new Graphics(image);
         recalculate();
         //Color all pixels 5 times each second
